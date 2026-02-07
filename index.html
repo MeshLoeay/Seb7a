@@ -595,7 +595,6 @@
       "أشهد أن لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
       "أستغفر الله الذى لا اله الا هو الحى القيوم عدد خلقه و رضا نفسه وزنه عرشه ومداد كلماته",
       "صل الله على محمد صلى الله عليه و سلم عليه الصلاه و السلام",
-
       "أشهد أن لا إله إلا الله، وأشهد أن محمدًا عبده ورسوله",
       "لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
       "استغفر الله", "استغفر الله العظيم", "سبحان الله", "الحمد لله", "لا حول ولا قوه الا بالله", "لا اله الا الله", "الله اكبر"
@@ -719,7 +718,6 @@
     resetBtn.addEventListener('mousedown', (e) => { if (!('ontouchstart' in window)) handleResetStart(e); });
     window.addEventListener('mouseup', () => resetBtn.classList.remove('is-active'));
 
-    // وظيفة الفتح الموحدة (أذكار أو أدعية)
     function openOverlay(type) {
       const listDiv = document.getElementById('azkarList');
       const title = document.getElementById('overlayMainTitle');
@@ -738,17 +736,15 @@
       document.getElementById('azkarOverlay').style.display = 'flex';
     }
 
+    // الدالة المعدلة: تم إزالة تصفير العداد (count = 0) ليبقى الرقم ثابتاً عند التغيير
     function selectDhikr(text) {
       activeDhikrText = text;
       activeDhikrLabel.innerText = text;
       localStorage.setItem('activeDhikr', text);
-      count = 0; // تصفير العداد للذكر الجديد
-      display.innerText = 0;
-      localStorage.setItem('tasbihCount', 0);
+      // تم حذف السطر الذي يصفر العداد هنا
       closeAzkar();
     }
 
-    // وظائف الإضافة الجديدة
     function showAddOptions() {
       document.getElementById('addModal').style.display = 'block';
     }
