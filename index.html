@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>سبحة إلكترونية</title>
+  <title>سبحة إلكترونية مطورة</title>
   <style>
     :root {
       --bg-color: #e5e7eb;
@@ -411,6 +411,39 @@
         opacity: 0;
       }
     }
+
+    /* تنسيق نافذة خيارات الإضافة الجديدة */
+    .modal-add {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 2000;
+      text-align: center;
+      width: 280px;
+    }
+
+    .modal-add h3 {
+      margin-top: 0;
+      color: #1e3a8a;
+    }
+
+    .modal-add button {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+    }
   </style>
 </head>
 
@@ -447,8 +480,16 @@
   </div>
 
   <div class="bottom-left-stack">
-    <button class="nav-btn" onclick="openAzkar()">الأذكار</button>
-    <button class="nav-btn" onclick="addNewDhikr()">إضافة ذكر</button>
+    <button class="nav-btn" onclick="openOverlay('doaa')">الأدعية</button>
+    <button class="nav-btn" onclick="openOverlay('azkar')">الأذكار</button>
+    <button class="nav-btn" onclick="showAddOptions()" style="background-color: #059669;">إضافة</button>
+  </div>
+
+  <div id="addModal" class="modal-add">
+    <h3>إضافة جديد</h3>
+    <button onclick="handleAddNewItem('azkar')" style="background: #eff6ff; color: #1e3a8a;">إضافة ذكر</button>
+    <button onclick="handleAddNewItem('doaa')" style="background: #f0fdf4; color: #166534;">إضافة دعاء</button>
+    <button onclick="hideAddOptions()" style="background: #fef2f2; color: #991b1b;">إلغاء</button>
   </div>
 
   <div class="bottom-right-tools">
@@ -512,7 +553,7 @@
     <div class="overlay-header">
       <button onclick="closeAzkar()"
         style="background:white; color:var(--main-color-1); border:none; padding:5px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">رجوع</button>
-      <h2 style="margin:0;">الأذكار</h2>
+      <h2 id="overlayMainTitle" style="margin:0;">المحتوى</h2>
       <div style="width:25px;"></div>
     </div>
     <div id="azkarList"></div>
@@ -544,6 +585,7 @@
     const fruits = ['🍎', '🍏', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥭', '🥝'];
     const cheerSound = new Audio('https://www.myinstants.com/media/sounds/kids_cheering.mp3');
 
+    // القوائم الافتراضية
     const defaultAzkar = [
       "لا إله إلا أنت سبحانك إني كنت من الظالمين",
       "الحمد لله كما ينبغي لجلال وجهك وعظيم سلطانك",
@@ -552,13 +594,30 @@
       "سبحان الله وبحمده سبحان الله العظيم",
       "أشهد أن لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
       "أستغفر الله الذى لا اله الا هو الحى القيوم عدد خلقه و رضا نفسه وزنه عرشه ومداد كلماته",
-      "اللهم انك عفو كريم تحب العفو فاعفو عنى",
+      "صل الله على محمد صلى الله عليه و سلم عليه الصلاه و السلام",
+
+      "أشهد أن لا إله إلا الله، وأشهد أن محمدًا عبده ورسوله",
       "لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
-      "استغفر الله", "استغفر الله العظيم", "صلى على النبى", "سبحان الله", "الحمد لله", "لا حول ولا قوه الا بالله", "لا اله الا الله", "الله اكبر"
+      "استغفر الله", "استغفر الله العظيم", "سبحان الله", "الحمد لله", "لا حول ولا قوه الا بالله", "لا اله الا الله", "الله اكبر"
+    ];
+
+    const defaultDoaa = [
+      "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا، وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ",
+      "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ جَهَنَّمَ، وَمِنْ عَذَابِ الْقَبْرِ، وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ، وَمِنْ شَرِّ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ",
+      "اللهم آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار",
+      "اللهم انك عفو كريم تحب العفو فاعفو عنى",
+      "اللهم اعني علي ذكرك وشكرك وحسن عبادتك",
+      "اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ",
+      "اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام",
+      "يا حي يا قيوم برحمتك أستغيث، أصلح لي شأني كله، ولا تكلني إلى نفسي طرفة عين",
+      "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ"
     ];
 
     let savedAzkar = JSON.parse(localStorage.getItem('myAzkarList_V3')) || [];
+    let savedDoaa = JSON.parse(localStorage.getItem('myDoaaList_V3')) || [];
+
     let dhikrList = [...new Set([...defaultAzkar, ...savedAzkar])];
+    let doaaList = [...new Set([...defaultDoaa, ...savedDoaa])];
 
     function formatHasanat(num) {
       return num.toLocaleString();
@@ -615,7 +674,7 @@
       isChildMode = !isChildMode;
       modeEmoji.innerText = isChildMode ? "🧔🏻" : "👶🏻";
       if (isChildMode) {
-        childModeToggle.style.backgroundColor = "#e0e7ff";
+        childModeToggle.style.backgroundColor = "white";
         startFruitRain();
       } else {
         childModeToggle.style.backgroundColor = "white";
@@ -650,28 +709,26 @@
       localStorage.setItem('tasbihCount', count);
     }
 
-    countBtn.addEventListener('touchstart', handleStart, {
-      passive: false
-    });
+    countBtn.addEventListener('touchstart', handleStart, { passive: false });
     countBtn.addEventListener('touchend', () => countBtn.classList.remove('is-active'));
-    countBtn.addEventListener('mousedown', (e) => {
-      if (!('ontouchstart' in window)) handleStart(e);
-    });
+    countBtn.addEventListener('mousedown', (e) => { if (!('ontouchstart' in window)) handleStart(e); });
     window.addEventListener('mouseup', () => countBtn.classList.remove('is-active'));
 
-    resetBtn.addEventListener('touchstart', handleResetStart, {
-      passive: false
-    });
+    resetBtn.addEventListener('touchstart', handleResetStart, { passive: false });
     resetBtn.addEventListener('touchend', () => resetBtn.classList.remove('is-active'));
-    resetBtn.addEventListener('mousedown', (e) => {
-      if (!('ontouchstart' in window)) handleResetStart(e);
-    });
+    resetBtn.addEventListener('mousedown', (e) => { if (!('ontouchstart' in window)) handleResetStart(e); });
     window.addEventListener('mouseup', () => resetBtn.classList.remove('is-active'));
 
-    function openAzkar() {
+    // وظيفة الفتح الموحدة (أذكار أو أدعية)
+    function openOverlay(type) {
       const listDiv = document.getElementById('azkarList');
+      const title = document.getElementById('overlayMainTitle');
       listDiv.innerHTML = '';
-      dhikrList.forEach((text) => {
+
+      const list = (type === 'azkar') ? dhikrList : doaaList;
+      title.innerText = (type === 'azkar') ? "الأذكار" : "الأدعية";
+
+      list.forEach((text) => {
         const item = document.createElement('div');
         item.className = 'dhikr-item';
         item.innerText = text;
@@ -685,29 +742,49 @@
       activeDhikrText = text;
       activeDhikrLabel.innerText = text;
       localStorage.setItem('activeDhikr', text);
+      count = 0; // تصفير العداد للذكر الجديد
+      display.innerText = 0;
+      localStorage.setItem('tasbihCount', 0);
       closeAzkar();
     }
 
-    function addNewDhikr() {
-      const newTxt = prompt("أدخل الذكر الجديد:");
+    // وظائف الإضافة الجديدة
+    function showAddOptions() {
+      document.getElementById('addModal').style.display = 'block';
+    }
+
+    function hideAddOptions() {
+      document.getElementById('addModal').style.display = 'none';
+    }
+
+    function handleAddNewItem(type) {
+      const promptText = (type === 'azkar') ? "أدخل الذكر الجديد:" : "أدخل الدعاء الجديد:";
+      const newTxt = prompt(promptText);
+
       if (newTxt && newTxt.trim() !== "") {
-        if (!dhikrList.includes(newTxt.trim())) {
-          dhikrList.push(newTxt.trim());
-          localStorage.setItem('myAzkarList_V3', JSON.stringify(dhikrList));
-          if (document.getElementById('azkarOverlay').style.display === 'flex') openAzkar();
+        if (type === 'azkar') {
+          if (!dhikrList.includes(newTxt.trim())) {
+            dhikrList.push(newTxt.trim());
+            savedAzkar.push(newTxt.trim());
+            localStorage.setItem('myAzkarList_V3', JSON.stringify(savedAzkar));
+            alert("تمت إضافة الذكر");
+          }
         } else {
-          alert("هذا الذكر موجود بالفعل.");
+          if (!doaaList.includes(newTxt.trim())) {
+            doaaList.push(newTxt.trim());
+            savedDoaa.push(newTxt.trim());
+            localStorage.setItem('myDoaaList_V3', JSON.stringify(savedDoaa));
+            alert("تمت إضافة الدعاء");
+          }
         }
       }
+      hideAddOptions();
     }
 
     function changeColor(c1, c2, save = true) {
       document.documentElement.style.setProperty('--main-color-1', c1);
       document.documentElement.style.setProperty('--main-color-2', c2);
-      if (save) localStorage.setItem('themeColors', JSON.stringify({
-        c1,
-        c2
-      }));
+      if (save) localStorage.setItem('themeColors', JSON.stringify({ c1, c2 }));
       colorMenu.classList.remove('active');
     }
 
