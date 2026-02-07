@@ -469,7 +469,6 @@
     </div>
     <div class="color-dot" title="فحمي" style="background: #374151;" onclick="changeColor('#374151', '#111827')"></div>
     <div class="color-dot" title="أسود" style="background: #1a1a1a;" onclick="changeColor('#1a1a1a', '#000000')"></div>
-
     <div class="color-dot" title="أزرق مائي" style="background: #87ceeb;" onclick="changeColor('#87ceeb', '#4682b4')">
     </div>
     <div class="color-dot" title="سماوي" style="background: #0ea5e9;" onclick="changeColor('#0ea5e9', '#075985')"></div>
@@ -478,7 +477,6 @@
     <div class="color-dot" title="نيلي" style="background: #4338ca;" onclick="changeColor('#4338ca', '#312e81')"></div>
     <div class="color-dot" title="أزرق ملكي" style="background: #1e3a8a;" onclick="changeColor('#1e3a8a', '#172554')">
     </div>
-
     <div class="color-dot" title="ليموني" style="background: #bef264;" onclick="changeColor('#bef264', '#4d7c0f')">
     </div>
     <div class="color-dot" title="فيروزي" style="background: #10b981;" onclick="changeColor('#10b981', '#064e3b')">
@@ -489,7 +487,6 @@
     </div>
     <div class="color-dot" title="أخضر غاباتي" style="background: #064e3b;" onclick="changeColor('#064e3b', '#022c22')">
     </div>
-
     <div class="color-dot" title="موف لافندر" style="background: #a855f7;" onclick="changeColor('#a855f7', '#6b21a8')">
     </div>
     <div class="color-dot" title="بنفسجي" style="background: #6b21a8;" onclick="changeColor('#6b21a8', '#581c87')">
@@ -498,7 +495,6 @@
     </div>
     <div class="color-dot" title="بنفسجي داكن" style="background: #4c1d95;" onclick="changeColor('#4c1d95', '#2e1065')">
     </div>
-
     <div class="color-dot" title="كهرماني" style="background: #f59e0b;" onclick="changeColor('#f59e0b', '#b45309')">
     </div>
     <div class="color-dot" title="ذهبي" style="background: #d97706;" onclick="changeColor('#d97706', '#b45309')"></div>
@@ -510,210 +506,240 @@
     <div class="color-dot" title="عنابي" style="background: #881337;" onclick="changeColor('#881337', '#4c0519')"></div>
     <div class="color-dot" title="بني محروق" style="background: #78350f;" onclick="changeColor('#78350f', '#451a03')">
     </div>
+  </div>
 
-    <div id="azkarOverlay" class="azkar-overlay">
-      <div class="overlay-header">
-        <button onclick="closeAzkar()"
-          style="background:white; color:var(--main-color-1); border:none; padding:5px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">رجوع</button>
-        <h2 style="margin:0;">الأذكار</h2>
-        <div style="width:25px;"></div>
-      </div>
-      <div id="azkarList"></div>
+  <div id="azkarOverlay" class="azkar-overlay">
+    <div class="overlay-header">
+      <button onclick="closeAzkar()"
+        style="background:white; color:var(--main-color-1); border:none; padding:5px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">رجوع</button>
+      <h2 style="margin:0;">الأذكار</h2>
+      <div style="width:25px;"></div>
     </div>
+    <div id="azkarList"></div>
+  </div>
 
-    <script>
-      const display = document.getElementById('display');
-      const hasanatDisplay = document.getElementById('hasanatDisplay');
-      const countBtn = document.getElementById('countBtn');
-      const resetBtn = document.getElementById('resetBtn');
-      const themeToggle = document.getElementById('themeToggle');
-      const menuToggle = document.getElementById('menuToggle');
-      const colorMenu = document.getElementById('colorMenu');
-      const activeDhikrLabel = document.getElementById('activeDhikr');
-      const childModeToggle = document.getElementById('childModeToggle');
-      const modeEmoji = document.getElementById('modeEmoji');
+  <script>
+    const display = document.getElementById('display');
+    const hasanatDisplay = document.getElementById('hasanatDisplay');
+    const countBtn = document.getElementById('countBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const themeToggle = document.getElementById('themeToggle');
+    const menuToggle = document.getElementById('menuToggle');
+    const colorMenu = document.getElementById('colorMenu');
+    const activeDhikrLabel = document.getElementById('activeDhikr');
+    const childModeToggle = document.getElementById('childModeToggle');
+    const modeEmoji = document.getElementById('modeEmoji');
 
-      let count = parseInt(localStorage.getItem('tasbihCount')) || 0;
-      let totalHasanat = parseInt(localStorage.getItem('totalHasanat')) || 0;
-      let isDark = localStorage.getItem('isDark') === 'true';
-      let activeDhikrText = localStorage.getItem('activeDhikr') || "اللهم انك عفو كريم تحب العفو فاعفو عنى";
-      let savedColors = JSON.parse(localStorage.getItem('themeColors')) || { c1: '#1e3a8a', c2: '#172554' };
-      let isChildMode = false;
-      let fruitInterval;
+    let count = parseInt(localStorage.getItem('tasbihCount')) || 0;
+    let totalHasanat = parseInt(localStorage.getItem('totalHasanat')) || 0;
+    let isDark = localStorage.getItem('isDark') === 'true';
+    let activeDhikrText = localStorage.getItem('activeDhikr') || "اللهم انك عفو كريم تحب العفو فاعفو عنى";
+    let savedColors = JSON.parse(localStorage.getItem('themeColors')) || {
+      c1: '#1e3a8a',
+      c2: '#172554'
+    };
+    let isChildMode = false;
+    let fruitInterval;
 
-      const fruits = ['🍎', '🍏', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥭', '🥝'];
-      const cheerSound = new Audio('https://www.myinstants.com/media/sounds/kids_cheering.mp3');
+    const fruits = ['🍎', '🍏', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥭', '🥝'];
+    const cheerSound = new Audio('https://www.myinstants.com/media/sounds/kids_cheering.mp3');
 
-      const defaultAzkar = [
-        "لا إله إلا أنت سبحانك إني كنت من الظالمين",
-        "الحمد لله كما ينبغي لجلال وجهك وعظيم سلطانك",
-        "لا حول ولا قوة إلا بالله العلي العظيم",
-        "سبحان الله وبحمده عدد خلقه ورضا نفسه وزنه عرشه و مداد كلماته",
-        "سبحان الله وبحمده سبحان الله العظيم",
-        "أشهد أن لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
-        "أستغفر الله الذى لا اله الا هو الحى القيوم عدد خلقه و رضا نفسه وزنه عرشه ومداد كلماته",
-        "اللهم انك عفو كريم تحب العفو فاعفو عنى",
-        "لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
-        "استغفر الله", "استغفر الله العظيم", "صلى على النبى", "سبحان الله", "الحمد لله", "لا حول ولا قوه الا بالله", "لا اله الا الله", "الله اكبر"
-      ];
+    const defaultAzkar = [
+      "لا إله إلا أنت سبحانك إني كنت من الظالمين",
+      "الحمد لله كما ينبغي لجلال وجهك وعظيم سلطانك",
+      "لا حول ولا قوة إلا بالله العلي العظيم",
+      "سبحان الله وبحمده عدد خلقه ورضا نفسه وزنه عرشه و مداد كلماته",
+      "سبحان الله وبحمده سبحان الله العظيم",
+      "أشهد أن لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
+      "أستغفر الله الذى لا اله الا هو الحى القيوم عدد خلقه و رضا نفسه وزنه عرشه ومداد كلماته",
+      "اللهم انك عفو كريم تحب العفو فاعفو عنى",
+      "لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
+      "استغفر الله", "استغفر الله العظيم", "صلى على النبى", "سبحان الله", "الحمد لله", "لا حول ولا قوه الا بالله", "لا اله الا الله", "الله اكبر"
+    ];
 
-      let savedAzkar = JSON.parse(localStorage.getItem('myAzkarList_V3')) || [];
-      let dhikrList = [...new Set([...defaultAzkar, ...savedAzkar])];
+    let savedAzkar = JSON.parse(localStorage.getItem('myAzkarList_V3')) || [];
+    let dhikrList = [...new Set([...defaultAzkar, ...savedAzkar])];
 
-      function formatHasanat(num) { return num.toLocaleString(); }
+    function formatHasanat(num) {
+      return num.toLocaleString();
+    }
 
-      function init() {
-        display.innerText = count;
-        hasanatDisplay.innerText = formatHasanat(totalHasanat);
-        activeDhikrLabel.innerText = activeDhikrText;
-        changeColor(savedColors.c1, savedColors.c2, false);
-        if (isDark) applyTheme(true);
+    function init() {
+      display.innerText = count;
+      hasanatDisplay.innerText = formatHasanat(totalHasanat);
+      activeDhikrLabel.innerText = activeDhikrText;
+      changeColor(savedColors.c1, savedColors.c2, false);
+      if (isDark) applyTheme(true);
+    }
+
+    function handleStart(e) {
+      if (e) e.preventDefault();
+      countBtn.classList.add('is-active');
+      count++;
+      totalHasanat++;
+      display.innerText = count;
+      hasanatDisplay.innerText = formatHasanat(totalHasanat);
+
+      localStorage.setItem('tasbihCount', count);
+      localStorage.setItem('totalHasanat', totalHasanat);
+
+      if (isChildMode && count > 0 && count % 10 === 0) {
+        triggerCelebration();
       }
+    }
 
-      function handleStart(e) {
-        if (e) e.preventDefault();
-        countBtn.classList.add('is-active');
-        count++;
-        totalHasanat++;
-        display.innerText = count;
-        hasanatDisplay.innerText = formatHasanat(totalHasanat);
-
-        localStorage.setItem('tasbihCount', count);
-        localStorage.setItem('totalHasanat', totalHasanat);
-
-        if (isChildMode && count > 0 && count % 10 === 0) {
-          triggerCelebration();
-        }
+    function triggerCelebration() {
+      cheerSound.currentTime = 0;
+      cheerSound.play();
+      setTimeout(() => {
+        cheerSound.pause();
+      }, 2000);
+      for (let i = 0; i < 40; i++) {
+        createConfetti();
       }
+    }
 
-      function triggerCelebration() {
-        cheerSound.currentTime = 0;
-        cheerSound.play();
-        setTimeout(() => { cheerSound.pause(); }, 2000);
-        for (let i = 0; i < 40; i++) { createConfetti(); }
+    function createConfetti() {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      c.style.animationDuration = (Math.random() * 1 + 2) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => {
+        c.remove();
+      }, 3000);
+    }
+
+    function toggleChildMode() {
+      isChildMode = !isChildMode;
+      modeEmoji.innerText = isChildMode ? "🧔🏻" : "👶🏻";
+      if (isChildMode) {
+        childModeToggle.style.backgroundColor = "#e0e7ff";
+        startFruitRain();
+      } else {
+        childModeToggle.style.backgroundColor = "white";
+        stopFruitRain();
       }
+    }
 
-      function createConfetti() {
-        const c = document.createElement('div');
-        c.className = 'confetti';
-        c.style.left = Math.random() * 100 + 'vw';
-        c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        c.style.animationDuration = (Math.random() * 1 + 2) + 's';
-        document.body.appendChild(c);
-        setTimeout(() => { c.remove(); }, 3000);
-      }
+    function startFruitRain() {
+      if (fruitInterval) return;
+      fruitInterval = setInterval(() => {
+        const f = document.createElement('div');
+        f.className = 'fruit-drop';
+        f.innerText = fruits[Math.floor(Math.random() * fruits.length)];
+        f.style.left = Math.random() * 100 + 'vw';
+        const dur = Math.random() * 2 + 3;
+        f.style.setProperty('--duration', dur + 's');
+        document.body.appendChild(f);
+        setTimeout(() => f.remove(), dur * 1000);
+      }, 500);
+    }
 
-      function toggleChildMode() {
-        isChildMode = !isChildMode;
-        modeEmoji.innerText = isChildMode ? "🧔🏻" : "👶🏻";
-        if (isChildMode) {
-          childModeToggle.style.backgroundColor = "#e0e7ff";
-          startFruitRain();
-        } else {
-          childModeToggle.style.backgroundColor = "white";
-          stopFruitRain();
-        }
-      }
+    function stopFruitRain() {
+      clearInterval(fruitInterval);
+      fruitInterval = null;
+    }
 
-      function startFruitRain() {
-        if (fruitInterval) return;
-        fruitInterval = setInterval(() => {
-          const f = document.createElement('div');
-          f.className = 'fruit-drop';
-          f.innerText = fruits[Math.floor(Math.random() * fruits.length)];
-          f.style.left = Math.random() * 100 + 'vw';
-          const dur = Math.random() * 2 + 3;
-          f.style.setProperty('--duration', dur + 's');
-          document.body.appendChild(f);
-          setTimeout(() => f.remove(), dur * 1000);
-        }, 500);
-      }
+    function handleResetStart(e) {
+      if (e) e.preventDefault();
+      resetBtn.classList.add('is-active');
+      count = 0;
+      display.textContent = count;
+      localStorage.setItem('tasbihCount', count);
+    }
 
-      function stopFruitRain() {
-        clearInterval(fruitInterval);
-        fruitInterval = null;
-      }
+    countBtn.addEventListener('touchstart', handleStart, {
+      passive: false
+    });
+    countBtn.addEventListener('touchend', () => countBtn.classList.remove('is-active'));
+    countBtn.addEventListener('mousedown', (e) => {
+      if (!('ontouchstart' in window)) handleStart(e);
+    });
+    window.addEventListener('mouseup', () => countBtn.classList.remove('is-active'));
 
-      function handleResetStart(e) {
-        if (e) e.preventDefault();
-        resetBtn.classList.add('is-active');
-        count = 0;
-        display.textContent = count;
-        localStorage.setItem('tasbihCount', count);
-      }
+    resetBtn.addEventListener('touchstart', handleResetStart, {
+      passive: false
+    });
+    resetBtn.addEventListener('touchend', () => resetBtn.classList.remove('is-active'));
+    resetBtn.addEventListener('mousedown', (e) => {
+      if (!('ontouchstart' in window)) handleResetStart(e);
+    });
+    window.addEventListener('mouseup', () => resetBtn.classList.remove('is-active'));
 
-      // أحداث أزرار العد والريست (تدعم الموبايل والكمبيوتر)
-      countBtn.addEventListener('touchstart', handleStart, { passive: false });
-      countBtn.addEventListener('touchend', () => countBtn.classList.remove('is-active'));
-      countBtn.addEventListener('mousedown', (e) => { if (!('ontouchstart' in window)) handleStart(e); });
-      window.addEventListener('mouseup', () => countBtn.classList.remove('is-active'));
-
-      resetBtn.addEventListener('touchstart', handleResetStart, { passive: false });
-      resetBtn.addEventListener('touchend', () => resetBtn.classList.remove('is-active'));
-      resetBtn.addEventListener('mousedown', (e) => { if (!('ontouchstart' in window)) handleResetStart(e); });
-      window.addEventListener('mouseup', () => resetBtn.classList.remove('is-active'));
-
-      function openAzkar() {
-        const listDiv = document.getElementById('azkarList');
-        listDiv.innerHTML = '';
-        dhikrList.forEach((text) => {
-          listDiv.innerHTML += `<div class="dhikr-item" onclick="selectDhikr('${text}')">${text}</div>`;
-        });
-        document.getElementById('azkarOverlay').style.display = 'flex';
-      }
-
-      function selectDhikr(text) {
-        activeDhikrText = text;
-        activeDhikrLabel.innerText = text;
-        localStorage.setItem('activeDhikr', text);
-        closeAzkar();
-      }
-
-      function addNewDhikr() {
-        const newTxt = prompt("أدخل الذكر الجديد:");
-        if (newTxt && newTxt.trim() !== "") {
-          if (!dhikrList.includes(newTxt.trim())) {
-            dhikrList.push(newTxt.trim());
-            localStorage.setItem('myAzkarList_V3', JSON.stringify(dhikrList));
-            if (document.getElementById('azkarOverlay').style.display === 'flex') openAzkar();
-          } else { alert("هذا الذكر موجود بالفعل."); }
-        }
-      }
-
-      function changeColor(c1, c2, save = true) {
-        document.documentElement.style.setProperty('--main-color-1', c1);
-        document.documentElement.style.setProperty('--main-color-2', c2);
-        if (save) localStorage.setItem('themeColors', JSON.stringify({ c1, c2 }));
-        colorMenu.classList.remove('active');
-      }
-
-      function applyTheme(dark) {
-        if (dark) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          themeToggle.textContent = '☀️';
-        } else {
-          document.documentElement.removeAttribute('data-theme');
-          themeToggle.textContent = '🌙';
-        }
-      }
-
-      themeToggle.addEventListener('click', () => {
-        isDark = !isDark;
-        applyTheme(isDark);
-        localStorage.setItem('isDark', isDark);
+    function openAzkar() {
+      const listDiv = document.getElementById('azkarList');
+      listDiv.innerHTML = '';
+      dhikrList.forEach((text) => {
+        const item = document.createElement('div');
+        item.className = 'dhikr-item';
+        item.innerText = text;
+        item.onclick = () => selectDhikr(text);
+        listDiv.appendChild(item);
       });
+      document.getElementById('azkarOverlay').style.display = 'flex';
+    }
 
-      menuToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        colorMenu.classList.toggle('active');
-      });
+    function selectDhikr(text) {
+      activeDhikrText = text;
+      activeDhikrLabel.innerText = text;
+      localStorage.setItem('activeDhikr', text);
+      closeAzkar();
+    }
 
-      document.addEventListener('click', () => colorMenu.classList.remove('active'));
-      function closeAzkar() { document.getElementById('azkarOverlay').style.display = 'none'; }
+    function addNewDhikr() {
+      const newTxt = prompt("أدخل الذكر الجديد:");
+      if (newTxt && newTxt.trim() !== "") {
+        if (!dhikrList.includes(newTxt.trim())) {
+          dhikrList.push(newTxt.trim());
+          localStorage.setItem('myAzkarList_V3', JSON.stringify(dhikrList));
+          if (document.getElementById('azkarOverlay').style.display === 'flex') openAzkar();
+        } else {
+          alert("هذا الذكر موجود بالفعل.");
+        }
+      }
+    }
 
-      // تشغيل التطبيق
-      init();
-    </script>
+    function changeColor(c1, c2, save = true) {
+      document.documentElement.style.setProperty('--main-color-1', c1);
+      document.documentElement.style.setProperty('--main-color-2', c2);
+      if (save) localStorage.setItem('themeColors', JSON.stringify({
+        c1,
+        c2
+      }));
+      colorMenu.classList.remove('active');
+    }
+
+    function applyTheme(dark) {
+      if (dark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀️';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙';
+      }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      isDark = !isDark;
+      applyTheme(isDark);
+      localStorage.setItem('isDark', isDark);
+    });
+
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      colorMenu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', () => colorMenu.classList.remove('active'));
+
+    function closeAzkar() {
+      document.getElementById('azkarOverlay').style.display = 'none';
+    }
+
+    init();
+  </script>
 </body>
 
 </html>
