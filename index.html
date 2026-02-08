@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="manifest" href="manifest.json">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سبحة إلكترونية مطورة</title>
+  <style>
+    :root {
+      --bg-color: #e5e7eb;
+      --main-color-1: #1e3a8a;
+      --main-color-2: #172554;
+      --screen-bg: #000;
+      --lcd-bg: #ccc;
+      --whatsapp-color: #25D366;
+      --facebook-color: #1877F2;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #111827;
+      --lcd-bg: #ccc;
+    }
+
+    #themeToggle {
+      transition: all 0.3s ease;
+      background-color: #111827;
+      color: #fff;
+    }
+
+    [data-theme="dark"] #themeToggle {
+      background-color: #ffffff !important;
+      color: #000;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: var(--bg-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s ease;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    button,
+    .color-dot {
+      -webkit-tap-highlight-color: transparent;
+      outline: none !important;
+      touch-action: manipulation;
+    }
+
+    .hasanat-badge {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      background: white;
+      border: 2px solid var(--main-color-1);
+      padding: 5px 10px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+      transition: border-color 0.3s ease;
+    }
+
+    .hasanat-title {
+      font-size: 12px;
+      color: #666;
+      display: block;
+    }
+
+    .hasanat-count {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--main-color-1);
+      transition: color 0.3s ease;
+    }
+
+    .current-dhikr-card {
+      width: 75%;
+      max-width: 350px;
+      background: white;
+      border: 3px solid var(--main-color-1);
+      border-radius: 20px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      z-index: 5;
+      transform: translateY(-85px);
+      transition: border-color 0.3s ease;
+    }
+
+    .dhikr-text {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .counter-body {
+      width: 220px;
+      height: 280px;
+      background: linear-gradient(145deg, var(--main-color-1), var(--main-color-2));
+      border-radius: 60px 60px 110px 110px;
+      box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.6), inset 5px 5px 15px rgba(255, 255, 255, 0.2), 0 20px 50px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      border: 1px solid var(--main-color-1);
+      transition: all 0.4s ease;
+      margin-top: -50px;
+    }
+
+    .counter-body::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 80px;
+      height: 550px;
+      background-color: #ccc;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50px;
+    }
+
+    .screen-frame {
+      width: 170px;
+      background-color: var(--screen-bg);
+      border-radius: 12px;
+      margin-top: 25px;
+      padding: 8px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+    }
+
+    .lcd-display {
+      background-color: var(--lcd-bg);
+      height: 65px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 45px;
+      font-weight: bold;
+      color: #2b3a30;
+    }
+
+    .reset-btn {
+      width: 35px;
+      height: 35px;
+      background: radial-gradient(circle, #f8fafc 0%, #94a3b8 100%);
+      border-radius: 50%;
+      border: 2px solid #64748b;
+      cursor: pointer;
+      position: absolute;
+      right: 20px;
+      top: 130px;
+      box-shadow: 0 4px 0 #475569;
+      transition: 0.05s all ease;
+    }
+
+    .count-btn {
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, #ffffff 0%, #cbd5e1 100%);
+      border-radius: 50%;
+      border: 5px solid #94a3b8;
+      cursor: pointer;
+      box-shadow: 0 10px 0 #64748b, 0 10px 20px rgba(0, 0, 0, 0.4);
+      margin-top: 50px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #334155;
+      transition: 0.05s all ease;
+    }
+
+    .reset-btn.is-active {
+      transform: translateY(4px) !important;
+      box-shadow: none !important;
+    }
+
+    .count-btn.is-active {
+      transform: translateY(10px) !important;
+      box-shadow: none !important;
+    }
+
+    .contact-section-bottom {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+    }
+
+    @media (max-width: 991px) {
+      .contact-section-bottom {
+        bottom: 80px;
+      }
+    }
+
+    .contact-title {
+      font-weight: bold;
+      color: var(--main-color-1);
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 2px 8px;
+      border-radius: 10px;
+      transition: color 0.3s;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .social-link {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .social-link img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .whatsapp-bg {
+      background-color: #25D366;
+    }
+
+    .facebook-bg {
+      background-color: #1877F2;
+    }
+
+    .bottom-left-stack {
+      position: absolute;
+      bottom: 30px;
+      left: 20px;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 12px;
+      z-index: 30;
+    }
+
+    @media (max-width: 991px) {
+      .bottom-left-stack {
+        bottom: 80px;
+      }
+    }
+
+    .nav-btn {
+      background-color: var(--main-color-1);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .bottom-right-tools {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 5px;
+      z-index: 30;
+    }
+
+    .icon-btn {
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      border-radius: 50%;
+      border: none;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      font-size: 22px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .fruit-drop {
+      position: fixed;
+      top: -50px;
+      font-size: 30px;
+      z-index: 1;
+      animation: fruitFall var(--duration) linear forwards;
+    }
+
+    @keyframes fruitFall {
+      to {
+        transform: translateY(110vh);
+      }
+    }
+
+    .color-menu {
+      position: absolute;
+      bottom: 120px;
+      right: 12px;
+      background: white;
+      padding: 12px;
+      border-radius: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      overflow-y: auto;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transform: scale(0);
+      transform-origin: bottom right;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s all cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 200;
+    }
+
+    .color-menu.active {
+      transform: scale(1);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .color-dot {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .color-dot:hover {
+      transform: scale(1.1);
+    }
+
+    .azkar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    .overlay-header {
+      background: var(--main-color-1);
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      position: sticky;
+      top: 0;
+      transition: background-color 0.3s;
+    }
+
+    .dhikr-item {
+      background: white;
+      border: 2px solid var(--main-color-1);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      text-align: right;
+      color: #333;
+      transition: border-color 0.3s ease;
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      z-index: 9999;
+      top: -10px;
+      border-radius: 50%;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .modal-add {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 2000;
+      text-align: center;
+      width: 280px;
+    }
+
+    .modal-add h3 {
+      margin-top: 0;
+      color: #1e3a8a;
+    }
+
+    .modal-add button {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hasanat-badge">
+    <span class="hasanat-title">عدد مرات الذكر</span>
+    <span class="hasanat-count" id="hasanatDisplay">0</span>
+  </div>
+
+  <div class="current-dhikr-card">
+    <span class="dhikr-text" id="activeDhikr">اللهم انك عفو كريم تحب العفو فاعفو عنى</span>
+  </div>
+
+  <div class="counter-body">
+    <div class="screen-frame">
+      <div class="lcd-display" id="display">0</div>
+    </div>
+    <span style="color:white; font-size:13px; position:absolute; right:17px; top:112px;">RESET</span>
+    <button class="reset-btn" id="resetBtn"></button>
+    <button class="count-btn" id="countBtn">اضغط</button>
+  </div>
+
+  <div class="contact-section-bottom">
+    <div class="contact-title">للتواصل معي</div>
+    <div class="social-row">
+      <a href="https://wa.me/201003412932" class="social-link whatsapp-bg" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+      </a>
+      <a href="https://www.facebook.com/qursan.loeay/" class="social-link facebook-bg" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_(2019).png" alt="Facebook">
+      </a>
+    </div>
+  </div>
+
+  <div class="bottom-left-stack">
+    <button class="nav-btn" onclick="openOverlay('doaa')">الأدعية</button>
+    <button class="nav-btn" onclick="openOverlay('azkar')">الأذكار</button>
+    <button class="nav-btn" onclick="showAddOptions()" style="background-color: #059669;">إضافة</button>
+  </div>
+
+  <div id="addModal" class="modal-add">
+    <h3>إضافة جديد</h3>
+    <button onclick="handleAddNewItem('azkar')" style="background: #eff6ff; color: #1e3a8a;">إضافة ذكر</button>
+    <button onclick="handleAddNewItem('doaa')" style="background: #f0fdf4; color: #166534;">إضافة دعاء</button>
+    <button onclick="hideAddOptions()" style="background: #fef2f2; color: #991b1b;">إلغاء</button>
+  </div>
+
+  <div class="bottom-right-tools">
+    <button class="icon-btn" id="childModeToggle" onclick="toggleChildMode()">
+      <span id="modeEmoji">👶🏻</span>
+    </button>
+    <button class="icon-btn" id="menuToggle">🎨</button>
+    <button class="icon-btn" id="themeToggle">🌙</button>
+  </div>
+
+  <div class="color-menu" id="colorMenu">
+    <div class="color-dot" title="سحابي" style="background: #e2e8f0;" onclick="changeColor('#e2e8f0', '#94a3b8')"></div>
+    <div class="color-dot" title="رمادي فاتح" style="background: #94a3b8;" onclick="changeColor('#94a3b8', '#475569')">
+    </div>
+    <div class="color-dot" title="رمادي متوسط" style="background: #64748b;" onclick="changeColor('#64748b', '#334155')">
+    </div>
+    <div class="color-dot" title="رمادي داكن" style="background: #475569;" onclick="changeColor('#475569', '#1e293b')">
+    </div>
+    <div class="color-dot" title="فحمي" style="background: #374151;" onclick="changeColor('#374151', '#111827')"></div>
+    <div class="color-dot" title="أسود" style="background: #1a1a1a;" onclick="changeColor('#1a1a1a', '#000000')"></div>
+    <div class="color-dot" title="أزرق مائي" style="background: #87ceeb;" onclick="changeColor('#87ceeb', '#4682b4')">
+    </div>
+    <div class="color-dot" title="سماوي" style="background: #0ea5e9;" onclick="changeColor('#0ea5e9', '#075985')"></div>
+    <div class="color-dot" title="تركواز" style="background: #0891b2;" onclick="changeColor('#0891b2', '#164e63')">
+    </div>
+    <div class="color-dot" title="نيلي" style="background: #4338ca;" onclick="changeColor('#4338ca', '#312e81')"></div>
+    <div class="color-dot" title="أزرق ملكي" style="background: #1e3a8a;" onclick="changeColor('#1e3a8a', '#172554')">
+    </div>
+    <div class="color-dot" title="ليموني" style="background: #bef264;" onclick="changeColor('#bef264', '#4d7c0f')">
+    </div>
+    <div class="color-dot" title="فيروزي" style="background: #10b981;" onclick="changeColor('#10b981', '#064e3b')">
+    </div>
+    <div class="color-dot" title="أخضر زمردي" style="background: #065f46;" onclick="changeColor('#065f46', '#064e3b')">
+    </div>
+    <div class="color-dot" title="زيتوني" style="background: #4d7c0f;" onclick="changeColor('#4d7c0f', '#365314')">
+    </div>
+    <div class="color-dot" title="أخضر غاباتي" style="background: #064e3b;" onclick="changeColor('#064e3b', '#022c22')">
+    </div>
+    <div class="color-dot" title="موف لافندر" style="background: #a855f7;" onclick="changeColor('#a855f7', '#6b21a8')">
+    </div>
+    <div class="color-dot" title="بنفسجي" style="background: #6b21a8;" onclick="changeColor('#6b21a8', '#581c87')">
+    </div>
+    <div class="color-dot" title="بنفسجي مائي" style="background: #8b2e9c;" onclick="changeColor('#8b2e9c', '#4b1a54')">
+    </div>
+    <div class="color-dot" title="بنفسجي داكن" style="background: #4c1d95;" onclick="changeColor('#4c1d95', '#2e1065')">
+    </div>
+    <div class="color-dot" title="كهرماني" style="background: #f59e0b;" onclick="changeColor('#f59e0b', '#b45309')">
+    </div>
+    <div class="color-dot" title="ذهبي" style="background: #d97706;" onclick="changeColor('#d97706', '#b45309')"></div>
+    <div class="color-dot" title="وردي" style="background: #fb7185;" onclick="changeColor('#fb7185', '#9f1239')"></div>
+    <div class="color-dot" title="كركديه" style="background: #db2777;" onclick="changeColor('#db2777', '#831843')">
+    </div>
+    <div class="color-dot" title="أحمر ملكي" style="background: #991b1b;" onclick="changeColor('#991b1b', '#7f1d1d')">
+    </div>
+    <div class="color-dot" title="عنابي" style="background: #881337;" onclick="changeColor('#881337', '#4c0519')"></div>
+    <div class="color-dot" title="بني محروق" style="background: #78350f;" onclick="changeColor('#78350f', '#451a03')">
+    </div>
+  </div>
+
+  <div id="azkarOverlay" class="azkar-overlay">
+    <div class="overlay-header">
+      <button onclick="closeAzkar()"
+        style="background:white; color:var(--main-color-1); border:none; padding:5px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">رجوع</button>
+      <h2 id="overlayMainTitle" style="margin:0;">المحتوى</h2>
+      <div style="width:25px;"></div>
+    </div>
+    <div id="azkarList"></div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const hasanatDisplay = document.getElementById('hasanatDisplay');
+    const countBtn = document.getElementById('countBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const themeToggle = document.getElementById('themeToggle');
+    const menuToggle = document.getElementById('menuToggle');
+    const colorMenu = document.getElementById('colorMenu');
+    const activeDhikrLabel = document.getElementById('activeDhikr');
+    const childModeToggle = document.getElementById('childModeToggle');
+    const modeEmoji = document.getElementById('modeEmoji');
+
+    // --- تعديل استرجاع البيانات المحفوظة ---
+    // إذا كنت تريد وضع رقم معين ابدأ به، غير الـ 0 في الأسفل للرقم الذي تريده
+    let count = parseInt(localStorage.getItem('tasbihCount')) || 0;
+    let totalHasanat = parseInt(localStorage.getItem('totalHasanat')) || 0;
+
+    let isDark = localStorage.getItem('isDark') === 'true';
+    let activeDhikrText = localStorage.getItem('activeDhikr') || "اللهم انك عفو كريم تحب العفو فاعفو عنى";
+    let savedColors = JSON.parse(localStorage.getItem('themeColors')) || { c1: '#1e3a8a', c2: '#172554' };
+    let isChildMode = false;
+    let fruitInterval;
+
+    const fruits = ['🍎', '🍏', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥭', '🥝'];
+    const cheerSound = new Audio('https://www.myinstants.com/media/sounds/kids_cheering.mp3');
+
+    // النصوص الأصلية كاملة كما طلبت
+    const defaultAzkar = [
+      "لا إله إلا أنت سبحانك إني كنت من الظالمين",
+      "الحمد لله كما ينبغي لجلال وجهك وعظيم سلطانك",
+      "لا حول ولا قوة إلا بالله العلي العظيم",
+      "سبحان الله وبحمده عدد خلقه ورضا نفسه وزنه عرشه و مداد كلماته",
+      "سبحان الله وبحمده سبحان الله العظيم",
+      "حسبى الله لا اله الا هو عليه توكلت و هو رب العرش العظيم",
+      "أشهد أن لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
+      "أستغفر الله الذى لا اله الا هو الحى القيوم عدد خلقه و رضا نفسه وزنه عرشه ومداد كلماته",
+      "صل الله على محمد صلى الله عليه و سلم عليه الصلاه و السلام",
+      "أشهد أن لا إله إلا الله، وأشهد أن محمدًا عبده ورسوله",
+      "لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
+      "استغفر الله", "استغفر الله العظيم", "سبحان الله", "الحمد لله", "لا حول ولا قوه الا بالله", "لا اله الا الله", "الله اكبر"
+    ];
+
+    const defaultDoaa = [
+      "دعاء طلب البركة: يَا رَبّ، إِنِّي أَسْأَلُكَ بَرَكَةً مِنْك، بَرَكَةً فِي عُمْرِي، بَرَكَةً لِي فِي أَهْلِي، بَرَكَةً فِي وَقْتِي، بَرَكَةً فِي الجُهْدِ، بَرَكَةً فِي العِلْمِ، بَرَكَةً فِي العَمَلِ، بَرَكَةً فِي الجَسَدِ، بَرَكَةً فِي الرِّزْقِ، وَارْقُزْنِي وَوَسِّعْ لِي فِي رِزْقِي يَا رَبّ. (3 مرات)",
+      "دعاء السَّتْر: اللَّهُمَّ اسْتُرْنَا بِسِتْرِكَ الجَمِيلِ الَّذِي سَتَرْتَ بِهِ نَفْسَكَ فَلَا عَيْنٌ تَرَاك، وَلَا تَفْضَحْنَا بَيْنَ خَلْقِكَ وَلَا تُخْزِنِي يَوْمَ يُبْعَثُون، اللَّهُمَّ أَعْلَا فَضْلِكَ كَلِمَةَ الحَقِّ وَالدِّين، اللَّهُمَّ اسْتُرْنَا فَوْقَ الأَرْضِ وَتَحْتَ الأَرْضِ وَيَوْمَ العَرْضِ. (3 مرات)",
+      "دعاء الحَاجَةِ وَالفَتْح: اللَّهُمَّ افْتَحْ بَيْنِي وَ بَيْنَ رِزْقِي وَنَصِيبِي وَسَعَادَتِي فَتْحًا مُبِينًا وَأَنْتَ خَيْرُ الفَاتِحِين، اللَّهُمَّ ارْزُقْنِي وَ وَسِّعْ لِي فِي رِزْقِي، وَارْزُقْنِي رِزْقًا وَاسِعًا عَاجِلًا يَا رَبّ، اللَّهُمَّ يَا مُسَخِّرَ الأَقْدَارِ سَخِّرْ لِي قَدْرًا يَلِيقُ بِكَرَمِكَ فَتُبْهِرُنِي بِعَطَائِكَ فِي الدُّنْيَا وَالآخِرَةِ. (3 مرات)",
+      "دعاء المُعْجِزَات: اللَّهُمَّ أَرِنِي عَجَائِبَ صُنْعِكَ فِي دُعَائِي، وَأَرِنِي لُطْفَكَ وَرَحْمَتَكَ فِي قَضَاءِ حَوائِجِي، وَأَرِنِي كَرَمَكَ وَ قُدْرَتَكَ فِي مَا تَعَلَّقَ بِهِ قَلْبِي، افْتَحْ لِي بَابًا يَا اللهُ ظَنَنْتُ مِن يَأْسِي أَنَّهُ لَنْ يُفْتَح، اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رِزْقِكَ وَتَوْفِيقِك، وَاسْتَجِبْ لِي دُعَائِي وَوَسِّعْ لِي فِي رِزْقِي وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّه. (3 مرات)",
+      "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا، وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ",
+      "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ جَهَنَّمَ، وَمِنْ عَذَابِ الْقَبْرِ، وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ، وَمِنْ شَرِّ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ",
+      "اللهم آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار",
+      "يا رب سامحني حين أسجد وبالي منشغل، وسامحني حين أتوب وأعود للذنب، فليس لي ملجأ غيرك يالله",
+      "يا رب ان ضل قلبى فقلبى انت تعرفه و ان كان ذنبى عظيما انت غفار",
+      "اللهم انك عفو كريم تحب العفو فاعفو عنى",
+      "اللهم اعني علي ذكرك وشكرك حسن عبادتك",
+      "اللهم دبر لى امرى فإنى لا أحسن التدبير",
+      "اللهم يسر لى ولا تعسر لى",
+      "اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ",
+      "اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام",
+      "يا حي يا قيوم برحمتك أستغيث، أصلح لي شأني كله، ولا تكلني إلى نفسي طرفة عين",
+      "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ",
+      "قال رسول الله صلى الله عليه وسلم أنه قال: ما أصاب أحداً قط هم ولا حزن فقال: اللهم إني عبدك وابن عبدك وابن أمتك ناصيتي بيدك ماض في حكمك عدل في قضاؤك، أسألك بكل اسم هو لك سميت به نفسك أو علمته أحداً من خلقك، أو أنزلته في كتابك، أو استأثرت به في علم الغيب عندك، أن تجعل القرآن ربيع قلبي ونور صدري جلاء حزني وذهاب همي، إلا أذهب الله همه وحزنه وأبدله مكانه فرجاً، قال: فقيل: يا رسول الله ألا نتعلمها؟ فقال: بلى ينبغي لمن سمعها أن يتعلمها",
+      " دعوات المكروب : اللهم رحمتك أرجو، فلا تكلني إلى نفسي طرفة عين، وأصلح لي شأني كله لا إله إلا أنت",
+      "كان النبي صلى الله عليه وسلم يدعو عند الكرب يقول : لا إله إلا الله العظيم الحليم، لا إله إلا الله رب السموات والأرض ورب العرش العظيم",
+      'قال رسول الله صلى الله عليه وسلم لأسماء بنت عميس:" ألا أعلمك كلمات تقولينهن عند الكرب، : ((الله الله ربي لا أشرك به شيئاً))',
+      'قال رسول الله – ﷺ-: “دعوة ذي النون لا إله إلا أنت سبحانك إني كنت من الظالمين، فإنها لم يدع بها مسلم ربه في شيء قط إلا استجاب له”',
+    ];
+
+    let savedAzkar = JSON.parse(localStorage.getItem('myAzkarList_V3')) || [];
+    let savedDoaa = JSON.parse(localStorage.getItem('myDoaaList_V3')) || [];
+
+    let dhikrList = [...new Set([...defaultAzkar, ...savedAzkar])];
+    let doaaList = [...new Set([...defaultDoaa, ...savedDoaa])];
+
+    function formatHasanat(num) { return num.toLocaleString(); }
+
+    function init() {
+      display.innerText = count;
+      hasanatDisplay.innerText = formatHasanat(totalHasanat);
+      activeDhikrLabel.innerText = activeDhikrText;
+      changeColor(savedColors.c1, savedColors.c2, false);
+      if (isDark) applyTheme(true);
+    }
+
+    function handleStart(e) {
+      if (e) e.preventDefault();
+      countBtn.classList.add('is-active');
+      count++;
+      totalHasanat++;
+      display.innerText = count;
+      hasanatDisplay.innerText = formatHasanat(totalHasanat);
+
+      localStorage.setItem('tasbihCount', count);
+      localStorage.setItem('totalHasanat', totalHasanat);
+
+      if (isChildMode && count > 0 && count % 10 === 0) {
+        triggerCelebration();
+      }
+    }
+
+    function triggerCelebration() {
+      cheerSound.currentTime = 0;
+      cheerSound.play();
+      setTimeout(() => { cheerSound.pause(); }, 4000);
+      for (let i = 0; i < 40; i++) { createConfetti(); }
+    }
+
+    function createConfetti() {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      c.style.animationDuration = (Math.random() * 1 + 2) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => { c.remove(); }, 3000);
+    }
+
+    function toggleChildMode() {
+      isChildMode = !isChildMode;
+      modeEmoji.innerText = isChildMode ? "🧔🏻" : "👶🏻";
+      if (isChildMode) startFruitRain(); else stopFruitRain();
+    }
+
+    function startFruitRain() {
+      if (fruitInterval) return;
+      fruitInterval = setInterval(() => {
+        const f = document.createElement('div');
+        f.className = 'fruit-drop';
+        f.innerText = fruits[Math.floor(Math.random() * fruits.length)];
+        f.style.left = Math.random() * 100 + 'vw';
+        const dur = Math.random() * 2 + 3;
+        f.style.setProperty('--duration', dur + 's');
+        document.body.appendChild(f);
+        setTimeout(() => f.remove(), dur * 1000);
+      }, 500);
+    }
+
+    function stopFruitRain() { clearInterval(fruitInterval); fruitInterval = null; }
+
+    function handleResetStart(e) {
+      if (e) e.preventDefault();
+      resetBtn.classList.add('is-active');
+      count = 0;
+      display.textContent = count;
+      localStorage.setItem('tasbihCount', count);
+    }
+
+    countBtn.addEventListener('touchstart', handleStart, { passive: false });
+    countBtn.addEventListener('touchend', () => countBtn.classList.remove('is-active'));
+    countBtn.addEventListener('mousedown', (e) => { if (!('ontouchstart' in window)) handleStart(e); });
+    window.addEventListener('mouseup', () => countBtn.classList.remove('is-active'));
+
+    resetBtn.addEventListener('touchstart', handleResetStart, { passive: false });
+    resetBtn.addEventListener('touchend', () => resetBtn.classList.remove('is-active'));
+    resetBtn.addEventListener('mousedown', (e) => { if (!('ontouchstart' in window)) handleResetStart(e); });
+    window.addEventListener('mouseup', () => resetBtn.classList.remove('is-active'));
+
+    function openOverlay(type) {
+      const listDiv = document.getElementById('azkarList');
+      const title = document.getElementById('overlayMainTitle');
+      listDiv.innerHTML = '';
+      const list = (type === 'azkar') ? dhikrList : doaaList;
+      title.innerText = (type === 'azkar') ? "الأذكار" : "الأدعية";
+      list.forEach((text) => {
+        const item = document.createElement('div');
+        item.className = 'dhikr-item';
+        item.innerText = text;
+        item.onclick = () => selectDhikr(text);
+        listDiv.appendChild(item);
+      });
+      document.getElementById('azkarOverlay').style.display = 'flex';
+    }
+
+    function selectDhikr(text) {
+      activeDhikrText = text;
+      activeDhikrLabel.innerText = text;
+      localStorage.setItem('activeDhikr', text);
+      closeAzkar();
+    }
+
+    function showAddOptions() { document.getElementById('addModal').style.display = 'block'; }
+    function hideAddOptions() { document.getElementById('addModal').style.display = 'none'; }
+
+    function handleAddNewItem(type) {
+      const promptText = (type === 'azkar') ? "أدخل الذكر الجديد:" : "أدخل الدعاء الجديد:";
+      const newTxt = prompt(promptText);
+      if (newTxt && newTxt.trim() !== "") {
+        if (type === 'azkar') {
+          if (!dhikrList.includes(newTxt.trim())) {
+            dhikrList.push(newTxt.trim());
+            savedAzkar.push(newTxt.trim());
+            localStorage.setItem('myAzkarList_V3', JSON.stringify(savedAzkar));
+          }
+        } else {
+          if (!doaaList.includes(newTxt.trim())) {
+            doaaList.push(newTxt.trim());
+            savedDoaa.push(newTxt.trim());
+            localStorage.setItem('myDoaaList_V3', JSON.stringify(savedDoaa));
+          }
+        }
+      }
+      hideAddOptions();
+    }
+
+    function changeColor(c1, c2, save = true) {
+      document.documentElement.style.setProperty('--main-color-1', c1);
+      document.documentElement.style.setProperty('--main-color-2', c2);
+      if (save) localStorage.setItem('themeColors', JSON.stringify({ c1, c2 }));
+      colorMenu.classList.remove('active');
+    }
+
+    function applyTheme(dark) {
+      if (dark) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀️';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙';
+      }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      isDark = !isDark;
+      applyTheme(isDark);
+      localStorage.setItem('isDark', isDark);
+    });
+
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      colorMenu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', () => colorMenu.classList.remove('active'));
+    function closeAzkar() { document.getElementById('azkarOverlay').style.display = 'none'; }
+
+    init();
+  </script>
+
+</body>
+
+</html>
