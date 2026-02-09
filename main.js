@@ -330,3 +330,8 @@ function closeAzkar() {
 }
 
 init();
+
+// أضف هذا داخل دالة toggleChildMode
+document.querySelector(".hanging-lantern").style.transform = isChildMode
+  ? "scale(1.5)"
+  : "scale(1)";

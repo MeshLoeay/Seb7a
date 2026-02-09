@@ -500,3 +500,175 @@ button,
     top: 25%;
   }
 }
+
+:root {
+  --ramadan-gold: #ffd700;
+  --ramadan-red: #b91c1c;
+}
+
+/* حاوية الزينة */
+.ramadan-decorations {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  pointer-events: none;
+  /* لكي لا تعيق الضغط على الأزرار */
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* خيط الزينة العلوي */
+.decoration-string {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 20px;
+  background-image: radial-gradient(circle, var(--ramadan-gold) 2px, transparent 2px);
+  background-size: 30px 30px;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+/* الفانوس المطور مع خاصية النبض الضوئي */
+.hanging-lantern {
+  position: absolute;
+  right: 5.15%;
+  top: 41%;
+  width: 40px;
+  height: 60px;
+  background: linear-gradient(to bottom, #d97706 0%, #b91c1c 20%, #b91c1c 80%, #d97706 100%);
+  clip-path: polygon(25% 0%, 75% 0%, 100% 20%, 100% 80%, 75% 100%, 25% 100%, 0% 80%, 0% 20%);
+
+  /* دمج حركتين: التأرجح والنبض الضوئي */
+  animation: swing 3s ease-in-out infinite, lantern-glow 2s ease-in-out infinite;
+
+  transform-origin: top center;
+  border: 1px solid var(--ramadan-gold);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width:767px) {
+  .hanging-lantern {
+    right: 7.1%;
+  }
+}
+
+/* حركة تنور وتطفي (النبض) */
+@keyframes lantern-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    filter: brightness(1);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 165, 0, 0.4);
+    filter: brightness(1.3);
+    /* يزيد سطوع الفانوس نفسه */
+  }
+}
+
+.hanging-lantern::after {
+  content: "🌙";
+  font-size: 20px;
+  color: #fff;
+  /* جعل الهلال ينبض أيضاً مع الضوء */
+  animation: moon-blink 2s ease-in-out infinite;
+}
+
+@keyframes moon-blink {
+
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* حركة التأرجح الأصلية */
+@keyframes swing {
+
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+/* الهلال */
+.hanging-moon {
+  position: absolute;
+  left: 37%;
+  top: 20px;
+  font-size: 30px;
+  filter: drop-shadow(0 0 10px var(--ramadan-gold));
+  animation: float 4s ease-in-out infinite;
+}
+
+.hanging-moon::before {
+  content: "🌙";
+}
+
+/* النجمة */
+.hanging-star {
+  position: absolute;
+  left: 36%;
+  top: 10px;
+  font-size: 20px;
+  color: var(--ramadan-gold);
+  animation: blink 2s infinite;
+}
+
+.hanging-star::before {
+  content: "⭐";
+}
+
+/* الحركات (Animations) */
+@keyframes swing {
+
+  0%,
+  100% {
+    transform: rotate(-10deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
