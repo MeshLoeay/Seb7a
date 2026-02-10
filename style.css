@@ -353,7 +353,7 @@ button,
   width: 100%;
   height: 100%;
   background: var(--bg-color);
-  z-index: 1000;
+  z-index: 10000 !important;
   display: none;
   flex-direction: column;
   padding: 20px;
@@ -415,7 +415,7 @@ button,
   border-radius: 20px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
   display: none;
-  z-index: 2000;
+  z-index: 20000 !important;
   text-align: center;
   width: 280px;
 }
@@ -536,13 +536,13 @@ button,
   left: 2.45%;
   /*نفسالموقعالذيحددته*/
   scale: .5;
-  top: 40%;
+  top: 42%;
   /*نفسالموقعالذيحددته*/
   width: 60px;
   /*حجممناسبللصورة،يمكنكتعديله*/
   height: auto;
   /*للحفاظعلىأبعادالصورةالأصلية*/
-  z-index: 100;
+  z-index: 5;
   /*ليكونفوقباقيالعناصر*/
   transform-origin: top center;
   /*نقطةالارتكازلحركةالتأرجح*/
@@ -558,7 +558,7 @@ button,
 
 @media (max-width:767px) {
   .hanging-lantern {
-    left: 10.5%;
+    left: 5%;
     /* نفس الموقع للموبايل */
     /* تصغير حجم الفانوس للموبايل */
   }
