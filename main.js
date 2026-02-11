@@ -1,3 +1,12 @@
+// كود إجباري لمسح أي نسخة قديمة مخزنة في المتصفح (Service Worker)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
+  });
+}
+
 // العناصر الأساسية
 const display = document.getElementById("display");
 const hasanatDisplay = document.getElementById("hasanatDisplay");
