@@ -19,6 +19,69 @@ const activeDhikrLabel = document.getElementById("activeDhikr");
 const childModeToggle = document.getElementById("childModeToggle");
 const modeEmoji = document.getElementById("modeEmoji");
 
+// --- [تعديل] إنشاء عنصر المستوى الشفاف مع الشريط النحيف (3px) ---
+const levelBadge = document.createElement("div");
+levelBadge.id = "levelDisplay";
+levelBadge.style.cssText = `
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: transparent;
+  order: 10;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+`;
+
+// عنصر نص كلمة "المستوى"
+const levelTextSpan = document.createElement("span");
+levelTextSpan.id = "levelText";
+levelTextSpan.innerText = "المستوى";
+levelTextSpan.style.cssText = `
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+`;
+
+// حاوية شريط التقدم
+const progressContainer = document.createElement("div");
+progressContainer.style.cssText = `
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+`;
+
+// الشريط الملون الداخلي (الذي يملأ النسبة)
+const progressBarFill = document.createElement("div");
+progressBarFill.id = "levelProgressBar";
+progressBarFill.style.cssText = `
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0%;
+  height: 100%;
+  background: #fff;
+  transition: width 0.5s ease;
+`;
+
+progressContainer.appendChild(progressBarFill);
+levelBadge.appendChild(levelTextSpan);
+levelBadge.appendChild(progressContainer);
+
+const toolsContainer = document.querySelector(".bottom-right-tools");
+if (toolsContainer) {
+  toolsContainer.style.flexWrap = "wrap";
+  toolsContainer.style.justifyContent = "center";
+  toolsContainer.appendChild(levelBadge);
+}
+
 // استرجاع البيانات المحفوظة
 let count = parseInt(localStorage.getItem("tasbihCount")) || 0;
 let totalHasanat = parseInt(localStorage.getItem("totalHasanat")) || 0;
@@ -32,10 +95,67 @@ let savedColors = JSON.parse(localStorage.getItem("themeColors")) || {
 };
 let isChildMode = false;
 let fruitInterval;
+let lastLevel = -1;
 
-// --- مخازن البيانات لـ "هنعمل إيه النهاردة" ---
+// --- منطق حساب المستويات وتحديث الشريط ---
+function updateLevel() {
+  let score = totalHasanat;
+  let level = 0;
+  let nextGoal = 0;
+  let currentBase = 0;
+
+  if (score >= 1000) {
+    level = 5 + Math.floor((score - 1000) / 1000);
+    currentBase = 1000 + Math.floor((score - 1000) / 1000) * 1000;
+    nextGoal = currentBase + 1000;
+  } else if (score >= 500) {
+    level = 4;
+    currentBase = 500;
+    nextGoal = 1000;
+  } else if (score >= 250) {
+    level = 3;
+    currentBase = 250;
+    nextGoal = 500;
+  } else if (score >= 100) {
+    level = 2;
+    currentBase = 100;
+    nextGoal = 250;
+  } else if (score >= 10) {
+    level = 1;
+    currentBase = 10;
+    nextGoal = 100;
+  } else {
+    level = 0;
+    currentBase = 0;
+    nextGoal = 10;
+  }
+
+  let progress = score - currentBase;
+  let range = nextGoal - currentBase;
+  let percent = Math.floor((progress / range) * 100);
+
+  // تحديث النص والشريط
+  document.getElementById("levelText").innerText = `المستوى ${level}`;
+  document.getElementById("levelProgressBar").style.width = `${percent}%`;
+
+  if (lastLevel !== -1 && level > lastLevel) {
+    triggerLevelUpAnimation();
+  }
+  lastLevel = level;
+}
+
+function triggerLevelUpAnimation() {
+  levelBadge.style.transform = "scale(1.3)";
+  display.style.transition = "transform 0.3s ease";
+  display.style.transform = "scale(1.15)";
+  setTimeout(() => {
+    levelBadge.style.transform = "scale(1)";
+    display.style.transform = "scale(1)";
+  }, 500);
+}
+
+// باقي دوال الموقع (ToDo, Data Loading, الخ)
 let todoTasks = JSON.parse(localStorage.getItem("myTodoTasks")) || [];
-
 const fruits = [
   "🍎",
   "🍏",
@@ -55,31 +175,17 @@ const cheerSound = new Audio(
   "https://www.myinstants.com/media/sounds/kids_cheering.mp3",
 );
 
-// --- مخازن البيانات الأصلية ---
 let dhikrList = [];
 let doaaList = [];
 let savedAzkar = JSON.parse(localStorage.getItem("myAzkarList_V3")) || [];
 let savedDoaa = JSON.parse(localStorage.getItem("myDoaaList_V3")) || [];
-
-// // القوائم الأساسية
-// let baseQA = [
-//   { q: "ما هي أحب الأعمال إلى الله؟", a: "الصلاة فى وقتها." },
-//   {
-//     q: "ما غراس الجنة؟",
-//     a: "سبحان الله والحمد لله ولا إله إلا الله والله أكبر.",
-//   },
-// ];
-// let baseQuran = [
-//   "﴿وَاصبِر لِحُكمِ رَبِّكَ فَإِنَّكَ بِأَعيُنِنا﴾",
-//   "﴿إِنَّ مَعَ العُسرِ يُسرًا﴾",
-// ];
-// let baseMsgs = ["لا تحزن، فالله يدبر لك الأمر.", "اجعل ذكر الله أنيسك."];
-
+let baseQA = [];
+let baseQuran = [];
+let baseMsgs = [];
 let myQA = JSON.parse(localStorage.getItem("customQA")) || [];
 let myQuran = JSON.parse(localStorage.getItem("customQuran")) || [];
 let myMsgs = JSON.parse(localStorage.getItem("customMsgs")) || [];
 
-// دالة تحميل البيانات المطورة
 async function loadData() {
   try {
     const [azkarRes, doaaRes, qaRes, quranRes, msgsRes] = await Promise.all([
@@ -89,7 +195,6 @@ async function loadData() {
       fetch("quran.json").catch(() => null),
       fetch("messages.json").catch(() => null),
     ]);
-
     if (azkarRes && azkarRes.ok) {
       const data = await azkarRes.json();
       dhikrList = [...new Set([...data.azkar])];
@@ -110,7 +215,6 @@ async function loadData() {
       const data = await msgsRes.json();
       baseMsgs = data.messages;
     }
-
     activeDhikrLabel.innerText = activeDhikrText;
   } catch (error) {
     console.error("خطأ في تحميل الملفات:", error);
@@ -125,6 +229,7 @@ function init() {
   loadData();
   display.innerText = count;
   hasanatDisplay.innerText = formatHasanat(totalHasanat);
+  updateLevel();
   activeDhikrLabel.innerText = activeDhikrText;
   changeColor(savedColors.c1, savedColors.c2, false);
   if (isDark) applyTheme(true);
@@ -138,13 +243,11 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 1500);
 }
 
-// --- دالة "مزيد" المحدثة ---
 function showMoreOptions() {
   const listDiv = document.getElementById("azkarList");
   const title = document.getElementById("overlayMainTitle");
   listDiv.innerHTML = "";
   title.innerText = "القائمة الإضافية";
-
   const options = [
     { text: "📅 هنعمل إيه النهاردة", action: () => openTodoSection() },
     { text: "الأدعية", action: () => openOverlay("doaa") },
@@ -152,7 +255,6 @@ function showMoreOptions() {
     { text: "رسائل من القرآن", action: () => openSection("quran") },
     { text: "رسائل", action: () => openSection("msg") },
   ];
-
   options.forEach((opt) => {
     const btn = document.createElement("button");
     btn.className = "nav-btn";
@@ -164,7 +266,6 @@ function showMoreOptions() {
     btn.style.border = "2px solid var(--main-color-1)";
     btn.style.fontWeight = "bold";
     btn.style.borderRadius = "12px";
-
     btn.innerText = opt.text;
     btn.onclick = opt.action;
     listDiv.appendChild(btn);
@@ -172,20 +273,15 @@ function showMoreOptions() {
   document.getElementById("azkarOverlay").style.display = "flex";
 }
 
-// --- قسم هنعمل إيه النهاردة (To-Do) ---
 function openTodoSection() {
   const listDiv = document.getElementById("azkarList");
   const title = document.getElementById("overlayMainTitle");
   listDiv.innerHTML = "";
   title.innerText = "📅 هنعمل إيه النهاردة";
-
   const completed = todoTasks.filter((t) => t.done).length;
   const total = todoTasks.length;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-  // استخدام لون المسبحة لشريط التقدم
   let barColor = "var(--main-color-1)";
-
   const progressHTML = `
     <div style="margin-bottom: 25px; text-align: center; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 20px;">
       <div style="background: white; border-radius: 12px; height: 16px; width: 100%; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
@@ -196,7 +292,6 @@ function openTodoSection() {
     </div>
   `;
   listDiv.innerHTML += progressHTML;
-
   const addBtn = document.createElement("button");
   addBtn.className = "nav-btn";
   addBtn.style.width = "100%";
@@ -213,16 +308,14 @@ function openTodoSection() {
     }
   };
   listDiv.appendChild(addBtn);
-
   const doneWrapper = document.createElement("div");
   const pendingWrapper = document.createElement("div");
   const hDone = document.createElement("h3");
   hDone.innerText = "✅ خلصنا الحمد لله";
-  hDone.style.color = "#059669"; // لون المسبحة
+  hDone.style.color = "#059669";
   const hPending = document.createElement("h3");
   hPending.innerText = "📌 لسه مخلصناش";
   hPending.style.color = "#fff";
-
   todoTasks.forEach((task, index) => {
     const card = document.createElement("div");
     card.className = "dhikr-item";
@@ -231,7 +324,6 @@ function openTodoSection() {
     card.style.gap = "10px";
     card.style.transition = "all 0.5s ease";
     card.style.opacity = "1";
-
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <span style="flex:1; font-weight:bold; color:black;">${task.text}</span>
@@ -244,7 +336,6 @@ function openTodoSection() {
          <span style="cursor:pointer; font-size:13px; color: #ff0000;" onclick="deleteTodo(${index})">حذف</span>
       </div>
     `;
-
     card.querySelector("button").onclick = () => {
       card.style.opacity = "0";
       card.style.transform = "translateX(20px)";
@@ -254,11 +345,9 @@ function openTodoSection() {
         openTodoSection();
       }, 400);
     };
-
     if (task.done) doneWrapper.appendChild(card);
     else pendingWrapper.appendChild(card);
   });
-
   listDiv.append(hDone, doneWrapper, hPending, pendingWrapper);
 }
 
@@ -281,14 +370,12 @@ function editTodo(index) {
   }
 }
 
-// --- قسم سؤال وجواب مع تعديل اللون المطلوب ---
 function openSection(mode) {
   const listDiv = document.getElementById("azkarList");
   const title = document.getElementById("overlayMainTitle");
   listDiv.innerHTML = "";
   const titles = { qa: "سؤال وجواب", quran: "رسائل قرآنية", msg: "الرسائل" };
   title.innerText = titles[mode];
-
   const tabContainer = document.createElement("div");
   tabContainer.style.display = "flex";
   tabContainer.style.gap = "10px";
@@ -303,7 +390,6 @@ function openSection(mode) {
   btnCustom.innerText = "إضافاتي";
   tabContainer.append(btnMain, btnCustom);
   listDiv.appendChild(tabContainer);
-
   const addBtn = document.createElement("button");
   addBtn.className = "nav-btn";
   addBtn.style.width = "100%";
@@ -312,10 +398,8 @@ function openSection(mode) {
   addBtn.innerText = "إضافة جديد +";
   addBtn.onclick = () => handleAddDynamic(mode);
   listDiv.appendChild(addBtn);
-
   const itemsWrapper = document.createElement("div");
   listDiv.appendChild(itemsWrapper);
-
   const render = (isMain) => {
     itemsWrapper.innerHTML = "";
     btnMain.style.opacity = isMain ? "1" : "0.5";
@@ -324,7 +408,6 @@ function openSection(mode) {
     if (mode === "qa") data = isMain ? baseQA : myQA;
     else if (mode === "quran") data = isMain ? baseQuran : myQuran;
     else data = isMain ? baseMsgs : myMsgs;
-
     data.forEach((item, index) => {
       const card = document.createElement("div");
       card.className = "dhikr-item";
@@ -332,12 +415,9 @@ function openSection(mode) {
       card.style.justifyContent = "space-between";
       const content = document.createElement("div");
       content.style.flex = "1";
-
-      // التعديل هنا: استخدام var(--main-color-1) ليكون نفس لون المسبحة
       if (mode === "qa")
         content.innerHTML = `<b style="color:var(--main-color-1);">س: ${item.q}</b><br><small>ج: ${item.a}</small>`;
       else content.innerText = item;
-
       card.appendChild(content);
       if (!isMain) {
         const editBtn = document.createElement("button");
@@ -406,7 +486,6 @@ function openOverlay(type) {
   listDiv.innerHTML = "";
   const isAzkar = type === "azkar";
   title.innerText = isAzkar ? "الأذكار" : "الأدعية";
-
   const tabContainer = document.createElement("div");
   tabContainer.style.display = "flex";
   tabContainer.style.gap = "10px";
@@ -421,7 +500,6 @@ function openOverlay(type) {
   btnCustom.innerText = "إضافاتي";
   tabContainer.append(btnMain, btnCustom);
   listDiv.appendChild(tabContainer);
-
   const addBtn = document.createElement("button");
   addBtn.className = "nav-btn";
   addBtn.style.width = "100%";
@@ -433,10 +511,8 @@ function openOverlay(type) {
     openOverlay(type);
   };
   listDiv.appendChild(addBtn);
-
   const itemsWrapper = document.createElement("div");
   listDiv.appendChild(itemsWrapper);
-
   const render = (isMain) => {
     itemsWrapper.innerHTML = "";
     btnMain.style.opacity = isMain ? "1" : "0.5";
@@ -508,6 +584,7 @@ function handleStart(e) {
   totalHasanat++;
   display.innerText = count;
   hasanatDisplay.innerText = formatHasanat(totalHasanat);
+  updateLevel();
   localStorage.setItem("tasbihCount", count);
   localStorage.setItem("totalHasanat", totalHasanat);
   if (isChildMode && count > 0 && count % 10 === 0) triggerCelebration();
@@ -567,7 +644,6 @@ function handleResetStart(e) {
   display.textContent = count;
   localStorage.setItem("tasbihCount", count);
 }
-
 function handleResetEnd() {
   resetBtn.classList.remove("is-active");
 }
@@ -605,6 +681,11 @@ function handleAddNewItem(type) {
 function changeColor(c1, c2, save = true) {
   document.documentElement.style.setProperty("--main-color-1", c1);
   document.documentElement.style.setProperty("--main-color-2", c2);
+
+  // تحديث لون شريط التقدم ليتناسب مع لون السبحة
+  const bar = document.getElementById("levelProgressBar");
+  if (bar) bar.style.background = "#fff"; // الشريط يظل أبيض ليكون واضحاً على الخلفية الملونة أو الشفافة
+
   if (save) localStorage.setItem("themeColors", JSON.stringify({ c1, c2 }));
 }
 
