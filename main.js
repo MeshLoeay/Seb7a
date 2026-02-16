@@ -33,6 +33,9 @@ let savedColors = JSON.parse(localStorage.getItem("themeColors")) || {
 let isChildMode = false;
 let fruitInterval;
 
+// --- مخازن البيانات لـ "هنعمل إيه النهاردة" ---
+let todoTasks = JSON.parse(localStorage.getItem("myTodoTasks")) || [];
+
 const fruits = [
   "🍎",
   "🍏",
@@ -52,85 +55,74 @@ const cheerSound = new Audio(
   "https://www.myinstants.com/media/sounds/kids_cheering.mp3",
 );
 
-const defaultAzkar = [
-  "لا إله إلا أنت سبحانك إني كنت من الظالمين",
-  "الحمد لله كما ينبغي لجلال وجهك وعظيم سلطانك",
-  "لا حول ولا قوة إلا بالله العلي العظيم",
-  "سبحان الله وبحمده عدد خلقه ورضا نفسه وزنه عرشه و مداد كلماته",
-  "سبحان الله وبحمده سبحان الله العظيم",
-  "حسبى الله لا اله الا هو عليه توكلت و هو رب العرش العظيم",
-  "أشهد أن لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
-  "أستغفر الله الذى لا اله الا هو الحى القيوم عدد خلقه و رضا نفسه وزنه عرشه ومداد كلماته",
-  "صل الله على محمد صلى الله عليه و سلم عليه الصلاه و السلام",
-  "أشهد أن لا إله إلا الله، وأشهد أن محمدًا عبده ورسوله",
-  "لا اله الا الله وحده لا شريك له له الملك و له الحمد و هو على كل شئ قدير",
-  "استغفر الله",
-  "استغفر الله العظيم",
-  "سبحان الله",
-  "الحمد لله",
-  "لا حول ولا قوه الا بالله",
-  "لا اله الا الله",
-  "الله اكبر",
-];
-
-const defaultDoaa = [
-  `رَبِّ إِنِّي لِمَا أَنزَلْتَ إِلَيَّ مِنْ خَيْرٍ فَقِيرٌ`,
-  "اللهم إني أحبك وان كنت أعصيك, اللهم لست برئ فأعتذر, ولا قويا فأنتصر, ولكن لا حول ولا قوة الا بك",
-  "دعاء طلب البركة: يَا رَبّ، إِنِّي أَسْأَلُكَ بَرَكَةً مِنْك، بَرَكَةً فِي عُمْرِي، بَرَكَةً لِي فِي أَهْلِي، بَرَكَةً فِي وَقْتِي، بَرَكَةً فِي الجُهْدِ، بَرَكَةً فِي العِلْمِ، بَرَكَةً فِي العَمَلِ، بَرَكَةً فِي الجَسَدِ، بَرَكَةً فِي الرِّزْقِ، وَارْقُزْنِي وَوَسِّعْ لِي فِي رِزْقِي يَا رَبّ. (3 مرات)",
-  "دعاء السَّتْر: اللَّهُمَّ اسْتُرْنَا بِسِتْرِكَ الجَمِيلِ الَّذِي سَتَرْتَ بِهِ نَفْسَكَ فَلَا عَيْنٌ تَرَاك، وَلَا تَفْضَحْنَا بَيْنَ خَلْقِكَ وَلَا تُخْزِنِي يَوْمَ يُبْعَثُون، اللَّهُمَّ أَعْلَا فَضْلِكَ كَلِمَةَ الحَقِّ وَالدِّين، اللَّهُمَّ اسْتُرْنَا فَوْقَ الأَرْضِ وَتحت الأَرْضِ وَيَوْمَ العَرْضِ. (3 مرات)",
-  "دعاء الحَاجَةِ وَالفَتْح: اللَّهُمَّ افْتَحْ بَيْنِي وَ بَيْنَ رِزْقِي وَنَصِيبِي وَسَعَادَتِي فَتْحًا مُبِينًا وَأَنْتَ خَيْرُ الفَاتِحِين، اللَّهُمَّ ارْزُقْنِي وَ وَسِّعْ لِي فِي رِزْقِي، وَارْقُزْنِي رِزْقًا وَاسِعًا عَاجِلًا يَا رَبّ، اللَّهُمَّ يَا مُسَخِّرَ الأَقْدَارِ سَخِّرْ لِي قَدْرًا يَلِيقُ بِكَرَمِكَ فَتُبْهِرُنِي بِعَطَائِكَ فِي الدُّنْيَا وَالآخِرَةِ. (3 مرات)",
-  "دعاء المُعْجِزَات: اللَّهُمَّ أَرِنِي عَجَائِبَ صُنْعِكَ فِي دُعَائِي، وَأَرِنِي لُطْفَكَ وَرَحْمَتَكَ فِي قَضَاءِ حَوائِجِي، وَأَرِنِي كَرَمَكَ وَ قُدْرَتَكَ فِي مَا تَعَلَّقَ بِهِ قَلْبِي، افْتَحْ لِي بَابًا يَا اللهُ ظَنَنْتُ مِن يَأْسِي أَنَّهُ لَنْ يُفْتَح، اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رِزْقِكَ وَتَوْفِيقِك، وَاسْتَجِبْ لِي دُعَائِي وَوَسِّعْ لِي فِي رِزْقِي وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّه. (3 مرات)",
-  "دعاء الرزق: اللَّهُمَّ إِنْ كَانَ رِزْقُنَا فِي السَّمَاءِ فَأَنْزِلْهُ، وَإِنْ كَانَ فِي الْأَرْضِ فَأَخْرِجْهُ، وَإِنْ كَانَ مُعَسَّراً فَيَسِّرْهُ، وَإِنْ كَانَ بَعِيداً فَقَرِّبْهُ، وَإِنْ كَانَ حَرَاماً فَطَهِّرْهُ، وَإِنْ كَانَ قَلِيلاً فَكَثِّرْهُ، وَإِنْ كَانَ مَعْدُوماً فَأَوْجِدْهُ، وَإِنْ كَانَ مَوْقُوفاً فَأَجْرِهِ، وَإِنْ كَانَ ذَنْباً فَاغْفِرْهُ، وَإِنْ كَانَ سَيِّئَةً فَامْحُهَا، وَإِنْ كَانَ خَطِيئَةً فَتَجَاوَزْ عَنْهَا، وَإِنْ كَانَ عَسْرَةً فَأَقِلْهَا، وَبَارِكْ لَنَا فِي جَمِيعِ ذَلِكَ، إِنَّكَ مَلِيكٌ مُقْتَدِرٌ.",
-  "دعاء لقضاء مصلحة متعسرة: اللهم أنت لها ولكل حاجة، ولا يعجزك أمر في الأرض ولا في السماء، اللهم اقضِ حوائجي كلها، ما ظهر منها وما بطن، يسّر لي أمري وبدّد صعوباته، افتح لي يا الله أبواب رحمتك وفضلك وتوفيقك، واجعل لي من كل ضيق مخرجاً ومن كل هم فرجاً.",
-  "ربِّ هب لي: اللهم هب لي ملكاً يليق بكرمك، ووجاهة ترفع بها قدري، ومالاً طيباً واسعاً، وتسخيراً عجيباً يدهشني بلطفه، وعوناً لا ينقطع، اجعلني في كنفك محاطاً برحمتك مُسدَّد الخطى بك.",
-  "يغفر لك 70 ألف ملك: هو الله الذي لا إله إلا هو عالم الغيب والشهادة هو الرحمن الرحيم، هو الله الذي لا إله إلا هو الملك القدوس السلام المؤمن المهيمن العزيز الجبار المتكبر سبحان الله عما يشركون، هو الله الخالق البارئ المصور له الأسماء الحسنى يسبح له ما في السماوات والأرض وهو العزيز الحكيم.",
-  "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا، وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ",
-  "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ جَهَنَّمَ، وَمِنْ عَذَابِ الْقَبْرِ، وَمِنْ فِتْنَةِ الْمَحْيَا وَالْمَمَاتِ، وَمِنْ شَرِّ فِتْنَةِ الْمَسِيحِ الدَّجَّالِ",
-  "اللهم آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار",
-  "يا رب سامحني حين أسجد وبالي منشغل، وسامحني حين أتوب وأعود للذنب، فليس لي ملجأ غيرك يالله",
-  "يا رب ان ضل قلبى فقلبى انت تعرفه و ان كان ذنبى عظيما انت غفار",
-  "اللهم انك عفو كريم تحب العفو فاعفو عنى",
-  "اللهم اعني علي ذكرك وشكرك حسن عبادتك",
-  "اللهم دبر لى امرى فإنى لا أحسن التدبير",
-  "اللهم ييسر لى ولا تعسر لى",
-  "اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ عَلَى سَيِّدِنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ",
-  "اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام",
-  "يا حي يا قيوم برحمتك أستغيث، أصلح لي شأني كله، ولا تكلني إلى نفسي طرفة عين",
-  "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ، كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ",
-  "اللهم إني عبدك وابن عبدك وابن أمتك ناصيتي بيدك ماض في حكمك عدل في قضاؤك، أسألك بكل اسم هو لك سميت به نفسك أو علمته أحداً من خلقك، أو أنزلته في كتابك، أو استأثرت به في علم الغيب عندك، أن تجعل القرآن ربيع قلبي ونور صدري جلاء حزني وذهاب همي",
-  "اللهم رحمتك أرجو، فلا تكلني إلى نفسي طرفة عين، وأصلح لي شأني كله لا إله إلا أنت",
-  "لا إله إلا الله العظيم الحليم، لا إله إلا الله رب السموات والأرض ورب العرش العظيم",
-  "الله الله ربي لا أشرك به شيئاً",
-  "لا إله إلا أنت سبحانك إني كنت من الظالمين",
-  "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ، وَهُوَ السَّمِيعُ الْعَلِيمُ.",
-  "اللَّهُمَّ اسْتَوْدَعْنَاكَ أَرْوَاحَنَا وَأَنْفُسَنَا، وَأَهْلَنَا وَأَقَارِبَنَا وَأَصْدِقَاءَنَا وَمَنْ نُحِبُّ، يَا مَنْ لَا تَضِيعُ لَدَيْهِ الْوَدَائِعُ.",
-  "اللَّهُمَّ إِنَّا عَلِمْنَا أَنَّهُ مَعَ الْعُسْرِ يُسْرًا، وَأَنَّهُ مَعَ الشِّدَّةِ الْفَرَجُ، وَأَنَّكَ مُبَدِّلُ الْأَحْوَالِ. اللَّهُمَّ مِنْ حَالٍ إِلَى حَالٍ، رَبِّي إِنَّكَ تَرَانَا وَتَعْلَمُ بِحَالِنَا، فَأَبْدِلْ عُسْرَنَا يُسْرًا، وَأَبْدِلْ شِدَّتَنَا بِفَرَجٍ قَرِيبٍ.",
-  "اللهم يا مقلب القلوب ثبت قلبي على دينك",
-  "اللهم يا مصرف القلوب صرف قلوبنا على طاعتك",
-  "اللهم اغننا بحلالك عن حرامك وبفضلك عمن سواك",
-  "اللهم جنبنا الفتن ما ظهر منها وما بطن",
-  "اللهم إني أسألك الهدى والتقى والعفاف والغنى",
-  "اللهم إني أسألك العلم والإيمان والإحسان والحكمة",
-  "اللهم أسألك حسن الخاتمة",
-  "اللهم أسألك الفردوس الأعلى",
-  "اللهم أسألك لذة النظر لوجهك الكريم",
-  "اللهم ألهمني رشدي وقني شر نفسي",
-  "اللهم اغفر لي وارحمني وعافني وارزقني",
-  "رب لا تذرني فرداً وأنت خير الوارثين",
-];
-
+// --- مخازن البيانات الأصلية ---
+let dhikrList = [];
+let doaaList = [];
 let savedAzkar = JSON.parse(localStorage.getItem("myAzkarList_V3")) || [];
 let savedDoaa = JSON.parse(localStorage.getItem("myDoaaList_V3")) || [];
 
-let dhikrList = [...new Set([...defaultAzkar, ...savedAzkar])];
-let doaaList = [...new Set([...defaultDoaa, ...savedDoaa])];
+// // القوائم الأساسية
+// let baseQA = [
+//   { q: "ما هي أحب الأعمال إلى الله؟", a: "الصلاة فى وقتها." },
+//   {
+//     q: "ما غراس الجنة؟",
+//     a: "سبحان الله والحمد لله ولا إله إلا الله والله أكبر.",
+//   },
+// ];
+// let baseQuran = [
+//   "﴿وَاصبِر لِحُكمِ رَبِّكَ فَإِنَّكَ بِأَعيُنِنا﴾",
+//   "﴿إِنَّ مَعَ العُسرِ يُسرًا﴾",
+// ];
+// let baseMsgs = ["لا تحزن، فالله يدبر لك الأمر.", "اجعل ذكر الله أنيسك."];
 
-// الوظائف
+let myQA = JSON.parse(localStorage.getItem("customQA")) || [];
+let myQuran = JSON.parse(localStorage.getItem("customQuran")) || [];
+let myMsgs = JSON.parse(localStorage.getItem("customMsgs")) || [];
+
+// دالة تحميل البيانات المطورة
+async function loadData() {
+  try {
+    const [azkarRes, doaaRes, qaRes, quranRes, msgsRes] = await Promise.all([
+      fetch("azkar.json").catch(() => null),
+      fetch("doaa.json").catch(() => null),
+      fetch("qa.json").catch(() => null),
+      fetch("quran.json").catch(() => null),
+      fetch("messages.json").catch(() => null),
+    ]);
+
+    if (azkarRes && azkarRes.ok) {
+      const data = await azkarRes.json();
+      dhikrList = [...new Set([...data.azkar])];
+    }
+    if (doaaRes && doaaRes.ok) {
+      const data = await doaaRes.json();
+      doaaList = [...new Set([...data.doaa])];
+    }
+    if (qaRes && qaRes.ok) {
+      const data = await qaRes.json();
+      baseQA = data.qa;
+    }
+    if (quranRes && quranRes.ok) {
+      const data = await quranRes.json();
+      baseQuran = data.quran;
+    }
+    if (msgsRes && msgsRes.ok) {
+      const data = await msgsRes.json();
+      baseMsgs = data.messages;
+    }
+
+    activeDhikrLabel.innerText = activeDhikrText;
+  } catch (error) {
+    console.error("خطأ في تحميل الملفات:", error);
+  }
+}
+
 function formatHasanat(num) {
   return num.toLocaleString();
 }
 
 function init() {
+  loadData();
   display.innerText = count;
   hasanatDisplay.innerText = formatHasanat(totalHasanat);
   activeDhikrLabel.innerText = activeDhikrText;
@@ -146,36 +138,360 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 1500);
 }
 
+// --- دالة "مزيد" المحدثة ---
+function showMoreOptions() {
+  const listDiv = document.getElementById("azkarList");
+  const title = document.getElementById("overlayMainTitle");
+  listDiv.innerHTML = "";
+  title.innerText = "القائمة الإضافية";
+
+  const options = [
+    { text: "📅 هنعمل إيه النهاردة", action: () => openTodoSection() },
+    { text: "الأدعية", action: () => openOverlay("doaa") },
+    { text: "سؤال وجواب", action: () => openSection("qa") },
+    { text: "رسائل من القرآن", action: () => openSection("quran") },
+    { text: "رسائل", action: () => openSection("msg") },
+  ];
+
+  options.forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.className = "nav-btn";
+    btn.style.width = "100%";
+    btn.style.marginBottom = "10px";
+    btn.style.padding = "15px";
+    btn.style.backgroundColor = "white";
+    btn.style.color = "var(--main-color-1)";
+    btn.style.border = "2px solid var(--main-color-1)";
+    btn.style.fontWeight = "bold";
+    btn.style.borderRadius = "12px";
+
+    btn.innerText = opt.text;
+    btn.onclick = opt.action;
+    listDiv.appendChild(btn);
+  });
+  document.getElementById("azkarOverlay").style.display = "flex";
+}
+
+// --- قسم هنعمل إيه النهاردة (To-Do) ---
+function openTodoSection() {
+  const listDiv = document.getElementById("azkarList");
+  const title = document.getElementById("overlayMainTitle");
+  listDiv.innerHTML = "";
+  title.innerText = "📅 هنعمل إيه النهاردة";
+
+  const completed = todoTasks.filter((t) => t.done).length;
+  const total = todoTasks.length;
+  const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  // استخدام لون المسبحة لشريط التقدم
+  let barColor = "var(--main-color-1)";
+
+  const progressHTML = `
+    <div style="margin-bottom: 25px; text-align: center; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 20px;">
+      <div style="background: white; border-radius: 12px; height: 16px; width: 100%; overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
+        <div id="todoProgressBar" style="background: ${barColor}; height: 100%; width: ${percent}%; transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1), background 0.5s ease;"></div>
+      </div>
+      <p style="margin-top: 10px; color: white; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px;">إنجازك: ${percent}%</p>
+      <p style="color: #cbd5e1; font-size: 0.9rem;">أنا جبت ${completed} من ${total}</p>
+    </div>
+  `;
+  listDiv.innerHTML += progressHTML;
+
+  const addBtn = document.createElement("button");
+  addBtn.className = "nav-btn";
+  addBtn.style.width = "100%";
+  addBtn.style.marginBottom = "20px";
+  addBtn.style.backgroundColor = "#059669";
+  addBtn.style.color = "white";
+  addBtn.innerText = "إضافة بوست جديد +";
+  addBtn.onclick = () => {
+    const task = prompt("ماذا ستقوم بفعله اليوم؟");
+    if (task && task.trim() !== "") {
+      todoTasks.push({ text: task.trim(), done: false });
+      saveTodo();
+      openTodoSection();
+    }
+  };
+  listDiv.appendChild(addBtn);
+
+  const doneWrapper = document.createElement("div");
+  const pendingWrapper = document.createElement("div");
+  const hDone = document.createElement("h3");
+  hDone.innerText = "✅ خلصنا الحمد لله";
+  hDone.style.color = "var(--main-color-1)"; // لون المسبحة
+  const hPending = document.createElement("h3");
+  hPending.innerText = "📌 لسه مخلصناش";
+  hPending.style.color = "#fff";
+
+  todoTasks.forEach((task, index) => {
+    const card = document.createElement("div");
+    card.className = "dhikr-item";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
+    card.style.gap = "10px";
+    card.style.transition = "all 0.5s ease";
+    card.style.opacity = "1";
+
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="flex:1; font-weight:bold; color:black;">${task.text}</span>
+        <button class="nav-btn" style="padding:6px 12px; background:${task.done ? "#059669" : "#b91c1c"}; border-radius: 8px; color:white;">
+          ${task.done ? "✅ خلصنا" : "❌ اضغط"}
+        </button>
+      </div>
+      <div style="display:flex; justify-content: flex-end; gap:20px; border-top: 1px solid rgba(0,0,0,0.05); padding-top:8px;">
+         <span style="cursor:pointer; font-size:13px; color: #00932f;" onclick="editTodo(${index})">تعديل</span>
+         <span style="cursor:pointer; font-size:13px; color: #ff0000;" onclick="deleteTodo(${index})">حذف</span>
+      </div>
+    `;
+
+    card.querySelector("button").onclick = () => {
+      card.style.opacity = "0";
+      card.style.transform = "translateX(20px)";
+      setTimeout(() => {
+        todoTasks[index].done = !todoTasks[index].done;
+        saveTodo();
+        openTodoSection();
+      }, 400);
+    };
+
+    if (task.done) doneWrapper.appendChild(card);
+    else pendingWrapper.appendChild(card);
+  });
+
+  listDiv.append(hDone, doneWrapper, hPending, pendingWrapper);
+}
+
+function saveTodo() {
+  localStorage.setItem("myTodoTasks", JSON.stringify(todoTasks));
+}
+function deleteTodo(index) {
+  if (confirm("هل تريد حذف هذا البوست؟")) {
+    todoTasks.splice(index, 1);
+    saveTodo();
+    openTodoSection();
+  }
+}
+function editTodo(index) {
+  const newT = prompt("تعديل البوست:", todoTasks[index].text);
+  if (newT && newT.trim() !== "") {
+    todoTasks[index].text = newT.trim();
+    saveTodo();
+    openTodoSection();
+  }
+}
+
+// --- قسم سؤال وجواب مع تعديل اللون المطلوب ---
+function openSection(mode) {
+  const listDiv = document.getElementById("azkarList");
+  const title = document.getElementById("overlayMainTitle");
+  listDiv.innerHTML = "";
+  const titles = { qa: "سؤال وجواب", quran: "رسائل قرآنية", msg: "الرسائل" };
+  title.innerText = titles[mode];
+
+  const tabContainer = document.createElement("div");
+  tabContainer.style.display = "flex";
+  tabContainer.style.gap = "10px";
+  tabContainer.style.marginBottom = "15px";
+  const btnMain = document.createElement("button");
+  btnMain.className = "nav-btn";
+  btnMain.style.flex = "1";
+  btnMain.innerText = "الأساسية";
+  const btnCustom = document.createElement("button");
+  btnCustom.className = "nav-btn";
+  btnCustom.style.flex = "1";
+  btnCustom.innerText = "إضافاتي";
+  tabContainer.append(btnMain, btnCustom);
+  listDiv.appendChild(tabContainer);
+
+  const addBtn = document.createElement("button");
+  addBtn.className = "nav-btn";
+  addBtn.style.width = "100%";
+  addBtn.style.marginBottom = "15px";
+  addBtn.style.backgroundColor = "#059669";
+  addBtn.innerText = "إضافة جديد +";
+  addBtn.onclick = () => handleAddDynamic(mode);
+  listDiv.appendChild(addBtn);
+
+  const itemsWrapper = document.createElement("div");
+  listDiv.appendChild(itemsWrapper);
+
+  const render = (isMain) => {
+    itemsWrapper.innerHTML = "";
+    btnMain.style.opacity = isMain ? "1" : "0.5";
+    btnCustom.style.opacity = isMain ? "0.5" : "1";
+    let data;
+    if (mode === "qa") data = isMain ? baseQA : myQA;
+    else if (mode === "quran") data = isMain ? baseQuran : myQuran;
+    else data = isMain ? baseMsgs : myMsgs;
+
+    data.forEach((item, index) => {
+      const card = document.createElement("div");
+      card.className = "dhikr-item";
+      card.style.display = "flex";
+      card.style.justifyContent = "space-between";
+      const content = document.createElement("div");
+      content.style.flex = "1";
+
+      // التعديل هنا: استخدام var(--main-color-1) ليكون نفس لون المسبحة
+      if (mode === "qa")
+        content.innerHTML = `<b style="color:var(--main-color-1);">س: ${item.q}</b><br><small>ج: ${item.a}</small>`;
+      else content.innerText = item;
+
+      card.appendChild(content);
+      if (!isMain) {
+        const editBtn = document.createElement("button");
+        editBtn.innerText = "✏️";
+        editBtn.style.background = "none";
+        editBtn.style.border = "none";
+        editBtn.onclick = () => handleEditDynamic(mode, index);
+        card.appendChild(editBtn);
+      }
+      itemsWrapper.appendChild(card);
+    });
+  };
+  btnMain.onclick = () => render(true);
+  btnCustom.onclick = () => render(false);
+  render(true);
+}
+
+function handleAddDynamic(mode) {
+  if (mode === "qa") {
+    const q = prompt("أدخل السؤال:");
+    const a = prompt("أدخل الإجابة:");
+    if (q && a) {
+      myQA.push({ q, a });
+      localStorage.setItem("customQA", JSON.stringify(myQA));
+    }
+  } else {
+    const txt = prompt("أدخل النص:");
+    if (txt) {
+      if (mode === "quran") {
+        myQuran.push(txt);
+        localStorage.setItem("customQuran", JSON.stringify(myQuran));
+      } else {
+        myMsgs.push(txt);
+        localStorage.setItem("customMsgs", JSON.stringify(myMsgs));
+      }
+    }
+  }
+  openSection(mode);
+}
+
+function handleEditDynamic(mode, index) {
+  if (mode === "qa") {
+    const newQ = prompt("تعديل السؤال:", myQA[index].q);
+    const newA = prompt("تعديل الإجابة:", myQA[index].a);
+    if (newQ && newA) {
+      myQA[index] = { q: newQ, a: newA };
+      localStorage.setItem("customQA", JSON.stringify(myQA));
+    }
+  } else {
+    let arr = mode === "quran" ? myQuran : myMsgs;
+    const newTxt = prompt("تعديل النص:", arr[index]);
+    if (newTxt) {
+      arr[index] = newTxt;
+      localStorage.setItem(
+        mode === "quran" ? "customQuran" : "customMsgs",
+        JSON.stringify(arr),
+      );
+    }
+  }
+  openSection(mode);
+}
+
 function openOverlay(type) {
   const listDiv = document.getElementById("azkarList");
   const title = document.getElementById("overlayMainTitle");
   listDiv.innerHTML = "";
+  const isAzkar = type === "azkar";
+  title.innerText = isAzkar ? "الأذكار" : "الأدعية";
 
-  if (type === "doaa") {
-    const infoBar = document.createElement("div");
-    infoBar.className = "info-bar-style";
-    infoBar.innerText = "⚠️ الأدعية للقراءة داخل الصفحه";
-    listDiv.appendChild(infoBar);
-  }
+  const tabContainer = document.createElement("div");
+  tabContainer.style.display = "flex";
+  tabContainer.style.gap = "10px";
+  tabContainer.style.marginBottom = "15px";
+  const btnMain = document.createElement("button");
+  btnMain.className = "nav-btn";
+  btnMain.style.flex = "1";
+  btnMain.innerText = "الأساسية";
+  const btnCustom = document.createElement("button");
+  btnCustom.className = "nav-btn";
+  btnCustom.style.flex = "1";
+  btnCustom.innerText = "إضافاتي";
+  tabContainer.append(btnMain, btnCustom);
+  listDiv.appendChild(tabContainer);
 
-  const list = type === "azkar" ? dhikrList : doaaList;
-  title.innerText = type === "azkar" ? "الأذكار" : "الأدعية";
+  const addBtn = document.createElement("button");
+  addBtn.className = "nav-btn";
+  addBtn.style.width = "100%";
+  addBtn.style.marginBottom = "15px";
+  addBtn.style.backgroundColor = "#059669";
+  addBtn.innerText = "إضافة جديد +";
+  addBtn.onclick = () => {
+    handleAddNewItem(type);
+    openOverlay(type);
+  };
+  listDiv.appendChild(addBtn);
 
-  list.forEach((text) => {
-    const item = document.createElement("div");
-    item.className = "dhikr-item";
-    item.innerText = text;
+  const itemsWrapper = document.createElement("div");
+  listDiv.appendChild(itemsWrapper);
 
-    item.onclick = () => {
-      if (type === "azkar") {
-        selectDhikr(text);
-      } else {
-        showToast("❤️ الدعاء للقراءة ❤️");
+  const render = (isMain) => {
+    itemsWrapper.innerHTML = "";
+    btnMain.style.opacity = isMain ? "1" : "0.5";
+    btnCustom.style.opacity = isMain ? "0.5" : "1";
+    let data = isMain
+      ? isAzkar
+        ? dhikrList
+        : doaaList
+      : isAzkar
+        ? savedAzkar
+        : savedDoaa;
+    data.forEach((text, index) => {
+      const card = document.createElement("div");
+      card.className = "dhikr-item";
+      card.style.display = "flex";
+      card.style.justifyContent = "space-between";
+      const span = document.createElement("span");
+      span.innerText = text;
+      span.style.flex = "1";
+      span.onclick = () => {
+        if (isAzkar) selectDhikr(text);
+        else showToast("❤️ للقراءة ❤️");
+      };
+      card.appendChild(span);
+      if (!isMain) {
+        const editBtn = document.createElement("button");
+        editBtn.innerText = "✏️";
+        editBtn.style.background = "none";
+        editBtn.style.border = "none";
+        editBtn.onclick = (e) => {
+          e.stopPropagation();
+          handleEditItem(type, index);
+        };
+        card.appendChild(editBtn);
       }
-    };
-    listDiv.appendChild(item);
-  });
+      itemsWrapper.appendChild(card);
+    });
+  };
+  btnMain.onclick = () => render(true);
+  btnCustom.onclick = () => render(false);
+  render(true);
   document.getElementById("azkarOverlay").style.display = "flex";
+}
+
+function handleEditItem(type, index) {
+  const currentList = type === "azkar" ? savedAzkar : savedDoaa;
+  const newTxt = prompt("تعديل النص:", currentList[index]);
+  if (newTxt && newTxt.trim() !== "") {
+    currentList[index] = newTxt.trim();
+    localStorage.setItem(
+      type === "azkar" ? "myAzkarList_V3" : "myDoaaList_V3",
+      JSON.stringify(currentList),
+    );
+    openOverlay(type);
+  }
 }
 
 function selectDhikr(text) {
@@ -197,15 +513,15 @@ function handleStart(e) {
   if (isChildMode && count > 0 && count % 10 === 0) triggerCelebration();
 }
 
+function handleEnd() {
+  countBtn.classList.remove("is-active");
+}
+
 function triggerCelebration() {
   cheerSound.currentTime = 0;
   cheerSound.play();
-  setTimeout(() => {
-    cheerSound.pause();
-  }, 4000);
-  for (let i = 0; i < 40; i++) {
-    createConfetti();
-  }
+  setTimeout(() => cheerSound.pause(), 4000);
+  for (let i = 0; i < 40; i++) createConfetti();
 }
 
 function createConfetti() {
@@ -215,9 +531,7 @@ function createConfetti() {
   c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
   c.style.animationDuration = Math.random() * 1 + 2 + "s";
   document.body.appendChild(c);
-  setTimeout(() => {
-    c.remove();
-  }, 3000);
+  setTimeout(() => c.remove(), 3000);
 }
 
 function toggleChildMode() {
@@ -254,35 +568,23 @@ function handleResetStart(e) {
   localStorage.setItem("tasbihCount", count);
 }
 
-// الـ Event Listeners
+function handleResetEnd() {
+  resetBtn.classList.remove("is-active");
+}
+
 countBtn.addEventListener("touchstart", handleStart, { passive: false });
-countBtn.addEventListener("touchend", () =>
-  countBtn.classList.remove("is-active"),
-);
+countBtn.addEventListener("touchend", handleEnd);
 countBtn.addEventListener("mousedown", (e) => {
   if (!("ontouchstart" in window)) handleStart(e);
 });
-window.addEventListener("mouseup", () =>
-  countBtn.classList.remove("is-active"),
-);
+window.addEventListener("mouseup", handleEnd);
 
 resetBtn.addEventListener("touchstart", handleResetStart, { passive: false });
-resetBtn.addEventListener("touchend", () =>
-  resetBtn.classList.remove("is-active"),
-);
+resetBtn.addEventListener("touchend", handleResetEnd);
 resetBtn.addEventListener("mousedown", (e) => {
   if (!("ontouchstart" in window)) handleResetStart(e);
 });
-window.addEventListener("mouseup", () =>
-  resetBtn.classList.remove("is-active"),
-);
-
-function showAddOptions() {
-  document.getElementById("addModal").style.display = "block";
-}
-function hideAddOptions() {
-  document.getElementById("addModal").style.display = "none";
-}
+window.addEventListener("mouseup", handleResetEnd);
 
 function handleAddNewItem(type) {
   const promptText =
@@ -290,27 +592,20 @@ function handleAddNewItem(type) {
   const newTxt = prompt(promptText);
   if (newTxt && newTxt.trim() !== "") {
     if (type === "azkar") {
-      if (!dhikrList.includes(newTxt.trim())) {
-        dhikrList.push(newTxt.trim());
-        savedAzkar.push(newTxt.trim());
-        localStorage.setItem("myAzkarList_V3", JSON.stringify(savedAzkar));
-      }
+      savedAzkar.push(newTxt.trim());
+      localStorage.setItem("myAzkarList_V3", JSON.stringify(savedAzkar));
     } else {
-      if (!doaaList.includes(newTxt.trim())) {
-        doaaList.push(newTxt.trim());
-        savedDoaa.push(newTxt.trim());
-        localStorage.setItem("myDoaaList_V3", JSON.stringify(savedDoaa));
-      }
+      savedDoaa.push(newTxt.trim());
+      localStorage.setItem("myDoaaList_V3", JSON.stringify(savedDoaa));
     }
+    showToast("تمت الإضافة");
   }
-  hideAddOptions();
 }
 
 function changeColor(c1, c2, save = true) {
   document.documentElement.style.setProperty("--main-color-1", c1);
   document.documentElement.style.setProperty("--main-color-2", c2);
   if (save) localStorage.setItem("themeColors", JSON.stringify({ c1, c2 }));
-  colorMenu.classList.remove("active");
 }
 
 function applyTheme(dark) {
@@ -328,20 +623,13 @@ themeToggle.addEventListener("click", () => {
   applyTheme(isDark);
   localStorage.setItem("isDark", isDark);
 });
-
 menuToggle.addEventListener("click", (e) => {
   e.stopPropagation();
   colorMenu.classList.toggle("active");
 });
-
 document.addEventListener("click", () => colorMenu.classList.remove("active"));
 function closeAzkar() {
   document.getElementById("azkarOverlay").style.display = "none";
 }
 
 init();
-
-// أضف هذا داخل دالة toggleChildMode
-document.querySelector(".hanging-lantern").style.transform = isChildMode
-  ? "scale(1.5)"
-  : "scale(1)";

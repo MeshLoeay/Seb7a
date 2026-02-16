@@ -40,10 +40,9 @@
     </div>
   </div>
 
-  <div class="bottom-left-stack">
-    <button class="nav-btn" onclick="openOverlay('doaa')">الأدعية</button>
+  <div class="bottom-left-stack" style="display: flex; flex-direction: column; gap: 8px;">
     <button class="nav-btn" onclick="openOverlay('azkar')">الأذكار</button>
-    <button class="nav-btn" onclick="showAddOptions()" style="background-color: #059669;">إضافة</button>
+    <button class="nav-btn" id="moreBtn" onclick="showMoreOptions()">مزيد</button>
   </div>
 
   <div id="addModal" class="modal-add">
