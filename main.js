@@ -218,7 +218,7 @@ function openTodoSection() {
   const pendingWrapper = document.createElement("div");
   const hDone = document.createElement("h3");
   hDone.innerText = "✅ خلصنا الحمد لله";
-  hDone.style.color = "var(--main-color-1)"; // لون المسبحة
+  hDone.style.color = "#059669"; // لون المسبحة
   const hPending = document.createElement("h3");
   hPending.innerText = "📌 لسه مخلصناش";
   hPending.style.color = "#fff";

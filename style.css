@@ -197,6 +197,7 @@ button,
 @media (max-width: 991px) {
   .contact-section-bottom {
     bottom: 80px;
+    right: 15px;
   }
 }
 
@@ -619,6 +620,12 @@ button,
 
 .hanging-star::before {
   content: "⭐";
+}
+
+@media (max-width: 767px) {
+  #overlayMainTitle {
+    font-size: 17px !important;
+  }
 }
 
 /* الحركات (Animations) */
