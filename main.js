@@ -26,10 +26,10 @@ levelBadge.style.cssText = `
   position: absolute;
   top: 60px;
   right: 10px;
-  width: 70px;
+  width: 65px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
   background: transparent;
   order: 10;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
