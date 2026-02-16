@@ -1,3 +1,2 @@
 # Seb7a
-## https://meshloeay.github.io/Seb7a/?fbclid=IwY2xjawP1tRpleHRuA2FlbQIxMABicmlkETF1b0taYWVFVndOZExsbUpUc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHiNCGc1g0tsDbPLbcoY43d3TAi2fKyBISRFXbSgBFXJH0lPBdxA1-_9hfF9Q_aem_KhxmboSwa81XwiyL3ZXdVA
-
+## https://meshloeay.github.io/Seb7a/
