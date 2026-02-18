@@ -151,39 +151,12 @@
       لؤي يهنئكم بحلول <br> 🌙 شهر رمضان الكريم 🌙 <br> ❤️ و كل عام و انتم بخير ❤️ </p>
   </div>
 
-  <audio id="ramadanAudio" muted autoplay playsinline>
-    <source src="أتيتَ بالسلام والهُدى محمد ❤.mp4" type="audio/mp4">
-  </audio>
-
   <script>
     window.addEventListener('load', () => {
       const popup = document.getElementById('ramadanPopup');
-      const audio = document.getElementById('ramadanAudio');
 
       // 1. إظهار نافذة التهنئة
       popup.style.display = 'block';
-
-      // 2. تشغيل الصوت فوراً وهو مكتوم، ثم إلغاء الكتم بعد 200 مللي ثانية
-      audio.play().then(() => {
-        setTimeout(() => {
-          audio.muted = false;
-        }, 200);
-      }).catch(err => {
-        // إذا المتصفح عنيد جداً، سيتم فتح الصوت عند أول لمسة للشاشة تلقائياً
-        console.log("التحميل التلقائي بانتظار التفاعل...");
-      });
-
-      // 3. كود احتياطي: لو المتصفح منع الصوت، بمجرد أي لمسة يشتغل فوراً
-      const enableAudio = () => {
-        if (audio.muted) {
-          audio.muted = false;
-          audio.play();
-        }
-        document.removeEventListener('click', enableAudio);
-        document.removeEventListener('touchstart', enableAudio);
-      };
-      document.addEventListener('click', enableAudio);
-      document.addEventListener('touchstart', enableAudio);
 
       // 4. إخفاء التهنئة بعد 5 ثوانٍ
       setTimeout(() => {
