@@ -341,6 +341,7 @@ button,
   cursor: pointer;
   border: 2px solid rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
+  background-color: red;
 }
 
 .color-dot:hover {
@@ -626,6 +627,10 @@ button,
   #overlayMainTitle {
     font-size: 17px !important;
   }
+}
+
+.gold {
+  width: 40px;
 }
 
 /* الحركات (Animations) */

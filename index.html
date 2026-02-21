@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="style.css?v=1.1">
+  <link rel="stylesheet" href="gold.css">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <title>سبحة إلكترونية مطورة</title>
 </head>
@@ -24,7 +25,7 @@
     <div class="screen-frame">
       <div class="lcd-display" id="display">0</div>
     </div>
-    <span style="color:white; font-size:13px; position:absolute; right:17px; top:112px;">RESET</span>
+    <span class="reset" style="color:white; font-size:13px; position:absolute; right:17px; top:112px;">RESET</span>
     <button class="reset-btn" id="resetBtn"></button>
     <button class="count-btn" id="countBtn">اضغط</button>
   </div>
@@ -62,6 +63,10 @@
   </div>
 
   <div class="color-menu" id="colorMenu">
+    <div class="gold">
+      <img src="10.png" alt="تغيير الثيم" style="max-width: 100%; height: auto; cursor: pointer;"
+        onclick="changeToGold()">
+    </div>
     <div class="color-dot" title="سحابي" style="background: #e2e8f0;" onclick="changeColor('#e2e8f0', '#94a3b8')"></div>
     <div class="color-dot" title="رمادي فاتح" style="background: #94a3b8;" onclick="changeColor('#94a3b8', '#475569')">
     </div>
@@ -128,27 +133,39 @@
     <div class="decoration-string"></div>
   </div>
 
-  <!-- ألبوبب اللى بتطلع فى الاول -->
   <div id="ramadanPopup" style="
     display: none;
     position: fixed;
     top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
-    color: black;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+    /* جعل الخلفية بالكامل تدرج ذهبي */
+    background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
+
+    /* إضافة بوردر أغمق قليلاً لبروز الحواف */
+    border: 2px solid #aa771c;
+
+    /* لون الخط أسود خفيف وواضح */
+    color: rgba(0, 0, 0, 0.8);
+
+    padding: 30px 20px;
+    border-radius: 20px;
+
+    /* ظل قوي ليعطي عمق (3D) */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,255,255,0.3);
+
     z-index: 10000;
     text-align: center;
-    width: 60%;
+    width: 50%;
     max-width: 350px;
-    border: 3px solid #000000;
     font-family: sans-serif;
     direction: rtl;">
-    <p style="margin: 0; font-size: 18px; line-height: 1.6;">
-      لؤي يهنئكم بحلول <br> 🌙 شهر رمضان الكريم 🌙 <br> ❤️ و كل عام و انتم بخير ❤️ </p>
+
+    <p style="margin: 0; font-size: 19px; line-height: 1.7; font-weight: bold;">
+      لؤى بيقلكو شوفو السبحه الجديده
+    </p>
+    <img src="/10.png" style="width: 50px;height: auto;" alt="">
   </div>
 
   <script>
@@ -170,6 +187,7 @@
   </script>
 
   <script src="main.js?v=1.1"></script>
+  <script src="gold.js"></script>
 </body>
 
 </html>
