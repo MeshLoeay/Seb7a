@@ -133,58 +133,75 @@
     <div class="decoration-string"></div>
   </div>
 
-  <div id="ramadanPopup" style="
+<div id="ramadanPopup" style="
     display: none;
     position: fixed;
-    top: 40%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(0.7); /* يبدأ صغير شوية للأنيميشن */
+    opacity: 0;
 
-    /* جعل الخلفية بالكامل تدرج ذهبي */
+    /* الخلفية الذهبية بالكامل */
     background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728);
 
-    /* إضافة بوردر أغمق قليلاً لبروز الحواف */
-    border: 2px solid #aa771c;
+    /* برواز فخم */
+    border: 3px solid #aa771c;
 
-    /* لون الخط أسود خفيف وواضح */
+    /* الخط أسود خفيف شيك */
     color: rgba(0, 0, 0, 0.8);
 
     padding: 30px 20px;
-    border-radius: 20px;
+    border-radius: 25px;
 
-    /* ظل قوي ليعطي عمق (3D) */
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,255,255,0.3);
+    /* ظلال عميقة 3D */
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 0 20px rgba(255,255,255,0.4);
 
-    z-index: 10000;
+    z-index: 10001;
     text-align: center;
-    width: 50%;
-    max-width: 350px;
-    font-family: sans-serif;
-    direction: rtl;">
+    width: 80%;
+    max-width: 320px;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    direction: rtl;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* أنيميشن مرن */
+">
 
-    <p style="margin: 0; font-size: 19px; line-height: 1.7; font-weight: bold;">
-      لؤى بيقلكو شوفو السبحه الجديده
+    <p style="margin: 0 0 15px 0; font-size: 20px; line-height: 1.6; font-weight: bold;">
+      لؤي بيقلكو شوفوا <br>
+      <span style="font-size: 26px; color: #5d4412;">السبحة الذهبية الجديدة</span>
     </p>
-    <img src="/10.png" style="width: 50px;height: auto;" alt="">
-  </div>
 
-  <script>
+    <img src="10.png" style="width: 80px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); animation: pulse 2s infinite;" alt="السبحة الذهبية">
+
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</div>
+
+<script>
     window.addEventListener('load', () => {
-      const popup = document.getElementById('ramadanPopup');
+        const popup = document.getElementById('ramadanPopup');
 
-      // 1. إظهار نافذة التهنئة
-      popup.style.display = 'block';
-
-      // 4. إخفاء التهنئة بعد 5 ثوانٍ
-      setTimeout(() => {
-        popup.style.transition = 'opacity 1s ease';
-        popup.style.opacity = '0';
+        // 1. إظهار الديف مع أنيميشن الدخول
+        popup.style.display = 'block';
         setTimeout(() => {
-          popup.style.display = 'none';
-        }, 1000);
-      }, 5000);
+            popup.style.opacity = '1';
+            popup.style.transform = 'translate(-50%, -50%) scale(1)';
+        }, 100);
+
+        // 2. إخفاء التهنئة بعد 5 ثوانٍ بتأثير التلاشي
+        setTimeout(() => {
+            popup.style.opacity = '0';
+            popup.style.transform = 'translate(-50%, -50%) scale(0.8)';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 600);
+        }, 5000);
     });
-  </script>
+</script>
 
   <script src="main.js?v=1.1"></script>
   <script src="gold.js"></script>

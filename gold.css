@@ -30,7 +30,7 @@ body.gold-theme .lcd-display {
   justify-content: center;
   align-items: center;
   font-size: 45px;
-  font-weight: 300;
+  font-weight: 700;
   /* جعل الأرقام تأخذ شكل الذهب */
   background-image: url('30.jpg') !important;
   background-size: cover;
