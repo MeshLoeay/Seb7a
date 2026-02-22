@@ -133,7 +133,7 @@
     <div class="decoration-string"></div>
   </div>
 
-<div id="ramadanPopup" style="
+  <div id="ramadanPopup" style="
     display: none;
     position: fixed;
     top: 50%;
@@ -166,42 +166,52 @@
 ">
 
     <p style="margin: 0 0 15px 0; font-size: 20px; line-height: 1.6; font-weight: bold;">
-      لؤي بيقلكو شوفوا <br>
+      شوفو <br>
       <span style="font-size: 26px; color: #5d4412;">السبحة الذهبية الجديدة</span>
     </p>
 
-    <img src="10.png" style="width: 80px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); animation: pulse 2s infinite;" alt="السبحة الذهبية">
+    <img src="10.png"
+      style="width: 80px; height: auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); animation: pulse 2s infinite;"
+      alt="السبحة الذهبية">
 
     <style>
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
         }
+
+        50% {
+          transform: scale(1.1);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
     </style>
-</div>
+  </div>
 
-<script>
+  <script>
     window.addEventListener('load', () => {
-        const popup = document.getElementById('ramadanPopup');
+      const popup = document.getElementById('ramadanPopup');
 
-        // 1. إظهار الديف مع أنيميشن الدخول
-        popup.style.display = 'block';
-        setTimeout(() => {
-            popup.style.opacity = '1';
-            popup.style.transform = 'translate(-50%, -50%) scale(1)';
-        }, 100);
+      // 1. إظهار الديف مع أنيميشن الدخول
+      popup.style.display = 'block';
+      setTimeout(() => {
+        popup.style.opacity = '1';
+        popup.style.transform = 'translate(-50%, -50%) scale(1)';
+      }, 100);
 
-        // 2. إخفاء التهنئة بعد 5 ثوانٍ بتأثير التلاشي
+      // 2. إخفاء التهنئة بعد 5 ثوانٍ بتأثير التلاشي
+      setTimeout(() => {
+        popup.style.opacity = '0';
+        popup.style.transform = 'translate(-50%, -50%) scale(0.8)';
         setTimeout(() => {
-            popup.style.opacity = '0';
-            popup.style.transform = 'translate(-50%, -50%) scale(0.8)';
-            setTimeout(() => {
-                popup.style.display = 'none';
-            }, 600);
-        }, 5000);
+          popup.style.display = 'none';
+        }, 600);
+      }, 5000);
     });
-</script>
+  </script>
 
   <script src="main.js?v=1.1"></script>
   <script src="gold.js"></script>
