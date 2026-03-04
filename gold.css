@@ -84,7 +84,7 @@ body.gold-theme #countBtn {
 
 /* 6. بادج عدد الحسنات (التدرج الذهبي) */
 body.gold-theme .hasanat-badge {
-  background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728) !important;
+    
   color: #5d4412 !important;
   border: 1px solid #aa771c !important;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
